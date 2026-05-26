@@ -1,0 +1,71 @@
+# generated: 2026-05-25T11:15:58+02:00
+# last_updated: 2026-05-25T18:10:02+02:00
+# project: rfmcp-reloaded
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: /home/many/workspace/rfmcp-reloaded/_bmad-output/implementation-artifacts
+#
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog -> in-progress: Automatically when first story is created (via create-story)
+#   - in-progress -> done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review in a fresh context
+
+generated: 2026-05-25T11:15:58+02:00
+last_updated: 2026-05-26T08:08:49+02:00
+project: rfmcp-reloaded
+project_key: NOKEY
+tracking_system: file-system
+story_location: /home/many/workspace/rfmcp-reloaded/_bmad-output/implementation-artifacts
+
+development_status:
+  epic-1: done
+  1-1-initialize-the-project-from-the-selected-starter-template: done
+  1-2-publish-contributor-bootstrap-rules-and-workspace-package-scaffolds: done
+  1-3-define-shared-validation-contracts-and-schema-sync: done
+  1-4-ship-deterministic-validate-workflow-with-structured-failure-output: done
+  1-5-add-validation-diagnostics-local-policy-defaults-and-benchmark-event-foundations: done
+  epic-1-retrospective: done
+  epic-2: done
+  2-1-expose-a-bounded-live-repair-session-surface: done
+  2-2-add-robot-framework-context-access-and-approved-inspection-snapshots: done
+  2-3-deliver-repair-diagnostics-validation-fallback-and-provenance-aware-hinting: done
+  2-4-complete-the-browser-library-flagship-repair-workflow: done
+  epic-2-retrospective: done
+  epic-3: backlog
+  3-1-implement-keyword-grounding-and-suite-scaffolding-workflows: backlog
+  3-2-implement-runnable-test-generation-with-verification: backlog
+  3-3-implement-refactor-and-regenerate-workflows-for-existing-suites: backlog
+  3-4-publish-canonical-generation-and-refactor-skills: backlog
+  3-5-prove-generation-and-refactor-workflows-with-end-to-end-scenarios: backlog
+  epic-3-retrospective: optional
+  epic-4: backlog
+  4-1-render-supported-host-outputs-by-renderer-family: backlog
+  4-2-add-install-surfaces-and-fallback-mapping-for-supported-hosts: backlog
+  4-3-publish-compatibility-profiles-and-first-run-onboarding: backlog
+  4-4-add-ci-compatibility-bundle-validation-and-release-gates: backlog
+  4-5-produce-benchmark-backed-release-evidence: backlog
+  epic-4-retrospective: optional

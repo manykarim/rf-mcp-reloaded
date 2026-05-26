@@ -1,0 +1,11 @@
+[project]
+name = "rfmcp-bundles"
+version = "0.1.0"
+description = "Host-targeted bundle renderers for canonical skill assets."
+readme = "../../README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

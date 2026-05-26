@@ -1,0 +1,122 @@
+{
+  "$defs": {
+    "FailureCategory": {
+      "enum": [
+        "keyword",
+        "library",
+        "argument",
+        "execution"
+      ],
+      "title": "FailureCategory",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "categories": {
+      "items": {
+        "$ref": "#/$defs/FailureCategory"
+      },
+      "title": "Categories",
+      "type": "array"
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Code"
+    },
+    "failure_message": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Failure Message"
+    },
+    "keyword": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Keyword"
+    },
+    "libraries": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Libraries",
+      "type": "array"
+    },
+    "library": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Library"
+    },
+    "live_state_available": {
+      "default": true,
+      "title": "Live State Available",
+      "type": "boolean"
+    },
+    "normalization_conflicts": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Normalization Conflicts",
+      "type": "array"
+    },
+    "normalization_events": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Normalization Events",
+      "type": "array"
+    },
+    "observed_keywords": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Observed Keywords",
+      "type": "array"
+    },
+    "target": {
+      "minLength": 1,
+      "title": "Target",
+      "type": "string"
+    },
+    "validation_issue_codes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Validation Issue Codes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "target"
+  ],
+  "title": "FailureContext",
+  "type": "object"
+}

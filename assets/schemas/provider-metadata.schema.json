@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "library_names": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Library Names",
+      "type": "array"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "provider_id": {
+      "minLength": 1,
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider_id",
+    "name",
+    "version",
+    "description"
+  ],
+  "title": "ProviderMetadata",
+  "type": "object"
+}

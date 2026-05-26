@@ -1,0 +1,8 @@
+{
+  "attach_enabled": false,
+  "loopback_only_http": true,
+  "explicit_opt_in_required": true,
+  "persist_session_credentials": false,
+  "context_write_enabled": true,
+  "inspection_snapshot_enabled": true
+}

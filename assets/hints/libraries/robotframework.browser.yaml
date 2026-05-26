@@ -1,0 +1,37 @@
+schema_version: "1.0"
+pack_id: "robotframework.browser.core"
+provider_id: "robotframework.browser"
+version: "1.0.0"
+description: "Curated repair hints for common Browser Library failure modes."
+hints:
+  - hint_id: "browser-library-import-missing"
+    summary: "Browser keywords are present but the Browser library import is missing."
+    recovery: "Add `Library    Browser` under *** Settings *** before retrying the failing suite."
+    confidence: 1.0
+    tags: ["browser", "library", "missing-import"]
+    error_codes: ["browser-library-missing", "unknown-keyword"]
+    libraries: ["Browser"]
+    keywords: ["New Page", "Click", "Type Text", "Get Title"]
+    categories: ["library", "keyword"]
+    provenance:
+      kind: "curated"
+      source: "robotframework.browser.core"
+      source_type: "curated-pack"
+      source_id: "robotframework.browser.core"
+      source_version: "1.0.0"
+      provider_id: "robotframework.browser"
+  - hint_id: "browser-keyword-arguments-review"
+    summary: "Browser Library keyword arguments often drift during repair when selectors or options are partially edited."
+    recovery: "Review the Browser keyword signature and align selectors, options, and positional arguments with the documented call shape."
+    confidence: 0.8
+    tags: ["browser", "arguments"]
+    error_codes: ["keyword-arguments-mismatch"]
+    libraries: ["Browser"]
+    categories: ["argument"]
+    provenance:
+      kind: "curated"
+      source: "robotframework.browser.core"
+      source_type: "curated-pack"
+      source_id: "robotframework.browser.core"
+      source_version: "1.0.0"
+      provider_id: "robotframework.browser"

@@ -1,0 +1,18 @@
+[project]
+name = "rfmcp-mcp"
+version = "0.1.0"
+description = "Live-state MCP server surface for rfmcp-reloaded."
+readme = "../../README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "fastmcp==3.3.1",
+    "rfmcp-core",
+]
+
+[project.scripts]
+rfmcp-mcp-http = "rfmcp_mcp.transports.http:main"
+rfmcp-mcp-stdio = "rfmcp_mcp.transports.stdio:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

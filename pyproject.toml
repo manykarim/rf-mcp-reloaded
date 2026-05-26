@@ -1,0 +1,53 @@
+[project]
+name = "rfmcp-reloaded"
+version = "0.1.0"
+description = "Workspace bootstrap for Robot Framework MCP and workflow tooling."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+rfmcp-core = { workspace = true }
+rfmcp-mcp = { workspace = true }
+rfmcp-cli = { workspace = true }
+rfmcp-skills = { workspace = true }
+rfmcp-bundles = { workspace = true }
+rfmcp-provider-browser = { workspace = true }
+rfmcp-provider-selenium = { workspace = true }
+rfmcp-provider-requests = { workspace = true }
+rfmcp-provider-appium = { workspace = true }
+rfmcp-provider-database = { workspace = true }
+
+[tool.rfmcp.bootstrap]
+starter_command = "uv init --package rfmcp-reloaded"
+required_uv_version = "0.11.16"
+python_version_pin = "3.11"
+python_requires = ">=3.11,<3.14"
+root_directories = ["packages", "scripts", ".github/workflows", "docs"]
+verification_script = "python3 scripts/verify_bootstrap_env.py"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "fastmcp==3.3.1",
+    "pydantic>=2.13.4,<3",
+    "pytest>=9.0.3",
+    "rfmcp-cli",
+    "rfmcp-mcp",
+    "rfmcp-skills",
+    "rfmcp-provider-browser",
+    "robotframework>=7.4,<7.5",
+    "typer>=0.25.1,<1",
+]

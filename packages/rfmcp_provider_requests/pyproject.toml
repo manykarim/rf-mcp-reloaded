@@ -1,0 +1,11 @@
+[project]
+name = "rfmcp-provider-requests"
+version = "0.1.0"
+description = "Requests provider scaffold for rfmcp-reloaded."
+readme = "../../README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,16 @@
+[project]
+name = "rfmcp-provider-browser"
+version = "0.1.0"
+description = "Browser Library provider scaffold for rfmcp-reloaded."
+readme = "../../README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "rfmcp-core",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.entry-points."rfmcp.providers"]
+"robotframework.browser" = "rfmcp_provider_browser.plugin:plugin"

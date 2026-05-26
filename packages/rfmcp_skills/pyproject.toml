@@ -1,0 +1,30 @@
+[project]
+name = "rfmcp-skills"
+version = "0.1.0"
+description = "Canonical host-agnostic skill workflow definitions."
+readme = "../../README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "rfmcp-core",
+    "robotframework>=7.4,<7.5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rfmcp_skills"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"../../assets/skills/browser-library-flagship-repair/README.md" = "rfmcp_skills/data/assets/browser-library-flagship-repair/README.md"
+"../../docs/browser-library-flagship-repair.md" = "rfmcp_skills/data/docs/browser-library-flagship-repair.md"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/rfmcp_skills/**/*.py",
+]
+
+[tool.hatch.build.targets.sdist.force-include]
+"../../assets/skills/browser-library-flagship-repair/README.md" = "src/rfmcp_skills/data/assets/browser-library-flagship-repair/README.md"
+"../../docs/browser-library-flagship-repair.md" = "src/rfmcp_skills/data/docs/browser-library-flagship-repair.md"
