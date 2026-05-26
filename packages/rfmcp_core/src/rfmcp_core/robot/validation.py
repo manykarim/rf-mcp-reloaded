@@ -12,6 +12,11 @@ from rfmcp_core.contracts import (
 )
 
 
+SUPPORTED_ARTIFACT_SUFFIXES = (".robot", ".resource")
+SUITE_SECTION_MARKERS = ("*** Test Cases ***", "*** Tasks ***")
+RESOURCE_SECTION_MARKER = "*** Keywords ***"
+
+
 def validate_robot_artifact(target: str) -> ValidationResult:
     path = Path(target)
     issues: list[ValidationIssue] = []
@@ -31,33 +36,36 @@ def validate_robot_artifact(target: str) -> ValidationResult:
             ),
         )
 
-    if path.suffix != ".robot":
+    if path.suffix not in SUPPORTED_ARTIFACT_SUFFIXES:
         return ValidationResult(
             ok=False,
             target=target,
             error=ErrorEnvelope(
                 code="unsupported-extension",
-                message="Validation currently expects a .robot file.",
+                message="Validation currently expects a .robot or .resource file.",
                 severity=Severity.ERROR,
                 provenance=ProvenanceRecord(kind=ProvenanceKind.OBSERVED, source="filesystem"),
                 retryable=True,
-                suggested_next_step="Point the command at a .robot file or rename the target before validating again.",
+                suggested_next_step="Point the command at a .robot or .resource file, or rename the target before validating again.",
                 details={"target": target, "suffix": path.suffix},
             ),
         )
 
     content = path.read_text()
-    if "*** Test Cases ***" not in content and "*** Keywords ***" not in content:
+    has_suite_section = any(marker in content for marker in SUITE_SECTION_MARKERS)
+    has_resource_section = RESOURCE_SECTION_MARKER in content
+
+    if not has_suite_section and not has_resource_section:
         issues.append(
             ValidationIssue(
                 code="missing-required-section",
-                message="Expected either a '*** Test Cases ***' or '*** Keywords ***' section.",
+                message="Expected a '*** Test Cases ***', '*** Tasks ***', or '*** Keywords ***' section.",
                 severity=Severity.ERROR,
                 path=target,
             )
         )
 
-    if "*** Test Cases ***" in content and "    " not in content:
+    if has_suite_section and "    " not in content:
         issues.append(
             ValidationIssue(
                 code="missing-indented-body",

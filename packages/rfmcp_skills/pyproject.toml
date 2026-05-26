@@ -18,7 +18,11 @@ packages = ["src/rfmcp_skills"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "../../assets/skills/browser-library-flagship-repair/README.md" = "rfmcp_skills/data/assets/browser-library-flagship-repair/README.md"
+"../../assets/skills/runnable-test-generation/README.md" = "rfmcp_skills/data/assets/runnable-test-generation/README.md"
+"../../assets/skills/existing-artifact-refactor/README.md" = "rfmcp_skills/data/assets/existing-artifact-refactor/README.md"
 "../../docs/browser-library-flagship-repair.md" = "rfmcp_skills/data/docs/browser-library-flagship-repair.md"
+"../../docs/runnable-test-generation.md" = "rfmcp_skills/data/docs/runnable-test-generation.md"
+"../../docs/existing-artifact-refactor.md" = "rfmcp_skills/data/docs/existing-artifact-refactor.md"
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -27,4 +31,8 @@ include = [
 
 [tool.hatch.build.targets.sdist.force-include]
 "../../assets/skills/browser-library-flagship-repair/README.md" = "src/rfmcp_skills/data/assets/browser-library-flagship-repair/README.md"
+"../../assets/skills/runnable-test-generation/README.md" = "src/rfmcp_skills/data/assets/runnable-test-generation/README.md"
+"../../assets/skills/existing-artifact-refactor/README.md" = "src/rfmcp_skills/data/assets/existing-artifact-refactor/README.md"
 "../../docs/browser-library-flagship-repair.md" = "src/rfmcp_skills/data/docs/browser-library-flagship-repair.md"
+"../../docs/runnable-test-generation.md" = "src/rfmcp_skills/data/docs/runnable-test-generation.md"
+"../../docs/existing-artifact-refactor.md" = "src/rfmcp_skills/data/docs/existing-artifact-refactor.md"

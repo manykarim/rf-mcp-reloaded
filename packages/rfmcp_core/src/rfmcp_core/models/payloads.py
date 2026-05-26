@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class Severity(str, Enum):
@@ -171,6 +171,167 @@ class ValidationResult(BaseModel):
     ok: bool
     target: str = Field(min_length=1)
     issues: list[ValidationIssue] = Field(default_factory=list)
+    error: ErrorEnvelope | None = None
+
+
+class GroundingLibrary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1)
+    import_name: str = Field(min_length=1)
+    provider_id: str | None = None
+    description: str | None = None
+    importable: bool
+    keyword_count: int | None = Field(default=None, ge=0)
+    provenance: ProvenanceRecord
+
+
+class GroundingKeyword(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    library_name: str = Field(min_length=1)
+    keyword_name: str = Field(min_length=1)
+    args_signature: str | None = None
+    documentation_excerpt: str | None = None
+    provenance: ProvenanceRecord
+
+
+class GroundingResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    ok: bool
+    query: str = Field(min_length=1)
+    libraries: list[GroundingLibrary] = Field(default_factory=list)
+    keywords: list[GroundingKeyword] = Field(default_factory=list)
+    preventive_guidance: list[HintCandidate] = Field(default_factory=list)
+    provider_failures: list[ProviderFailure] = Field(default_factory=list)
+    error: ErrorEnvelope | None = None
+
+
+class ScaffoldArtifact(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    path: str = Field(min_length=1)
+    kind: Literal["suite", "resource"]
+    content: str = Field(min_length=1)
+    validation: ValidationResult
+
+
+class ScaffoldResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    ok: bool
+    artifact: ScaffoldArtifact
+    preventive_guidance: list[HintCandidate] = Field(default_factory=list)
+    created: bool
+    overwritten: bool
+    error: ErrorEnvelope | None = None
+
+    @model_validator(mode="after")
+    def validate_mutation_flags(self) -> "ScaffoldResult":
+        if self.created and self.overwritten:
+            raise ValueError("Scaffold results cannot be marked as both created and overwritten.")
+        return self
+
+
+class GenerationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    tasks: list[str] = Field(default_factory=list)
+    steps: list[str] = Field(default_factory=list)
+    assertions: list[str] = Field(default_factory=list)
+    libraries: list[str] = Field(default_factory=list)
+    resources: list[str] = Field(default_factory=list)
+
+
+class GenerationEvidenceItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["task", "step", "assertion"]
+    requested: str = Field(min_length=1)
+    present_in_artifact: bool
+    fulfilled: bool
+    detail: str | None = None
+
+
+class ExecutionProof(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    ok: bool
+    command: list[str] = Field(default_factory=list)
+    return_code: int | None = None
+    detail: str = Field(min_length=1)
+    output_excerpt: str | None = None
+
+
+class GenerationResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    ok: bool
+    request: GenerationRequest
+    artifact: ScaffoldArtifact
+    evidence: list[GenerationEvidenceItem] = Field(default_factory=list)
+    execution: ExecutionProof
+    preventive_guidance: list[HintCandidate] = Field(default_factory=list)
+    diagnostics: RepairDiagnosticResult | None = None
+    hint_resolution: HintResolutionResult | None = None
+    correction_path: list[str] = Field(default_factory=list)
+    error: ErrorEnvelope | None = None
+
+
+class RefactorRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    mode: Literal["refactor", "regenerate"]
+    target: str = Field(min_length=1)
+    rename_to: str | None = None
+    documentation: str | None = None
+    replace: list[str] = Field(default_factory=list)
+    steps: list[str] = Field(default_factory=list)
+    assertions: list[str] = Field(default_factory=list)
+
+
+class RefactorChange(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["rename", "documentation", "replace-body-line", "append-body-line", "regenerate-body"]
+    summary: str = Field(min_length=1)
+    before: str | None = None
+    after: str | None = None
+
+
+class RefactorArtifact(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    path: str = Field(min_length=1)
+    kind: Literal["suite", "resource"]
+    original_content: str = Field(min_length=1)
+    updated_content: str = Field(min_length=1)
+    diff: str = Field(min_length=1)
+
+
+class RefactorRunVerification(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    status: Literal["passed", "failed", "not-applicable"]
+    execution: ExecutionProof | None = None
+    detail: str = Field(min_length=1)
+
+
+class RefactorResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    ok: bool
+    request: RefactorRequest
+    artifact: RefactorArtifact
+    changes: list[RefactorChange] = Field(default_factory=list)
+    validation: ValidationResult
+    run_verification: RefactorRunVerification
+    preventive_guidance: list[HintCandidate] = Field(default_factory=list)
+    diagnostics: RepairDiagnosticResult | None = None
+    hint_resolution: HintResolutionResult | None = None
+    manual_follow_up: list[str] = Field(default_factory=list)
+    correction_path: list[str] = Field(default_factory=list)
     error: ErrorEnvelope | None = None
 
 

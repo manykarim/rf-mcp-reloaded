@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review in a fresh context
 
 generated: 2026-05-25T11:15:58+02:00
-last_updated: 2026-05-26T08:08:49+02:00
+last_updated: 2026-05-26T19:34:26+02:00
 project: rfmcp-reloaded
 project_key: NOKEY
 tracking_system: file-system
@@ -55,12 +55,12 @@ development_status:
   2-3-deliver-repair-diagnostics-validation-fallback-and-provenance-aware-hinting: done
   2-4-complete-the-browser-library-flagship-repair-workflow: done
   epic-2-retrospective: done
-  epic-3: backlog
-  3-1-implement-keyword-grounding-and-suite-scaffolding-workflows: backlog
-  3-2-implement-runnable-test-generation-with-verification: backlog
-  3-3-implement-refactor-and-regenerate-workflows-for-existing-suites: backlog
-  3-4-publish-canonical-generation-and-refactor-skills: backlog
-  3-5-prove-generation-and-refactor-workflows-with-end-to-end-scenarios: backlog
+  epic-3: done
+  3-1-implement-keyword-grounding-and-suite-scaffolding-workflows: done
+  3-2-implement-runnable-test-generation-with-verification: done
+  3-3-implement-refactor-and-regenerate-workflows-for-existing-suites: done
+  3-4-publish-canonical-generation-and-refactor-skills: done
+  3-5-prove-generation-and-refactor-workflows-with-end-to-end-scenarios: done
   epic-3-retrospective: optional
   epic-4: backlog
   4-1-render-supported-host-outputs-by-renderer-family: backlog

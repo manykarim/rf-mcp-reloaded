@@ -14,6 +14,8 @@ from rfmcp_core.models.hint_pack import HintPackManifest  # noqa: E402
 from rfmcp_core.models.payloads import (  # noqa: E402
     FailureContext,
     ErrorEnvelope,
+    GenerationResult,
+    GroundingResult,
     HintPayload,
     HintResolutionResult,
     InspectionSnapshotResult,
@@ -21,8 +23,10 @@ from rfmcp_core.models.payloads import (  # noqa: E402
     RepairSessionSummary,
     RepairDiagnosticResult,
     RepairStepResult,
+    RefactorResult,
     RobotContextMutationResult,
     RobotContextView,
+    ScaffoldResult,
     SkillManifest,
     ValidationResult,
 )
@@ -31,6 +35,8 @@ from rfmcp_core.models.payloads import (  # noqa: E402
 SCHEMAS = {
     "error-envelope.schema.json": ErrorEnvelope,
     "failure-context.schema.json": FailureContext,
+    "generation-result.schema.json": GenerationResult,
+    "grounding-result.schema.json": GroundingResult,
     "hint-pack.schema.json": HintPackManifest,
     "hint-payload.schema.json": HintPayload,
     "hint-resolution-result.schema.json": HintResolutionResult,
@@ -39,8 +45,10 @@ SCHEMAS = {
     "repair-diagnostic-result.schema.json": RepairDiagnosticResult,
     "repair-session.schema.json": RepairSessionSummary,
     "repair-step-result.schema.json": RepairStepResult,
+    "refactor-result.schema.json": RefactorResult,
     "robot-context-mutation-result.schema.json": RobotContextMutationResult,
     "robot-context-view.schema.json": RobotContextView,
+    "scaffold-result.schema.json": ScaffoldResult,
     "skill-manifest.schema.json": SkillManifest,
     "validation-result.schema.json": ValidationResult,
 }

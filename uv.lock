@@ -990,12 +990,14 @@ version = "0.1.0"
 source = { editable = "packages/rfmcp_cli" }
 dependencies = [
     { name = "rfmcp-core" },
+    { name = "robotframework" },
     { name = "typer" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "rfmcp-core", editable = "packages/rfmcp_core" },
+    { name = "robotframework", specifier = ">=7.4,<7.5" },
     { name = "typer", specifier = ">=0.25.1,<1" },
 ]
 

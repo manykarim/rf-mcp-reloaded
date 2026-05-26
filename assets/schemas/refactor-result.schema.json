@@ -1,0 +1,1092 @@
+{
+  "$defs": {
+    "DiagnosticFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/FailureCategory"
+        },
+        "code": {
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Details"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/ProvenanceRecord"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "suggested_next_step": {
+          "minLength": 1,
+          "title": "Suggested Next Step",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "severity",
+        "category",
+        "provenance",
+        "suggested_next_step"
+      ],
+      "title": "DiagnosticFinding",
+      "type": "object"
+    },
+    "ErrorEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Details"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/ProvenanceRecord"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "suggested_next_step": {
+          "minLength": 1,
+          "title": "Suggested Next Step",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "severity",
+        "provenance",
+        "retryable",
+        "suggested_next_step"
+      ],
+      "title": "ErrorEnvelope",
+      "type": "object"
+    },
+    "ExecutionProof": {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Command",
+          "type": "array"
+        },
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "output_excerpt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output Excerpt"
+        },
+        "return_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Return Code"
+        }
+      },
+      "required": [
+        "ok",
+        "detail"
+      ],
+      "title": "ExecutionProof",
+      "type": "object"
+    },
+    "FailureCategory": {
+      "enum": [
+        "keyword",
+        "library",
+        "argument",
+        "execution"
+      ],
+      "title": "FailureCategory",
+      "type": "string"
+    },
+    "FailureContext": {
+      "additionalProperties": false,
+      "properties": {
+        "categories": {
+          "items": {
+            "$ref": "#/$defs/FailureCategory"
+          },
+          "title": "Categories",
+          "type": "array"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Code"
+        },
+        "failure_message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Message"
+        },
+        "keyword": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Keyword"
+        },
+        "libraries": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Libraries",
+          "type": "array"
+        },
+        "library": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Library"
+        },
+        "live_state_available": {
+          "default": true,
+          "title": "Live State Available",
+          "type": "boolean"
+        },
+        "normalization_conflicts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Normalization Conflicts",
+          "type": "array"
+        },
+        "normalization_events": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Normalization Events",
+          "type": "array"
+        },
+        "observed_keywords": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Observed Keywords",
+          "type": "array"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "validation_issue_codes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Validation Issue Codes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "title": "FailureContext",
+      "type": "object"
+    },
+    "HintCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "hint_id": {
+          "minLength": 1,
+          "title": "Hint Id",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/ProvenanceRecord"
+        },
+        "recovery": {
+          "minLength": 1,
+          "title": "Recovery",
+          "type": "string"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "hint_id",
+        "summary",
+        "recovery",
+        "provenance"
+      ],
+      "title": "HintCandidate",
+      "type": "object"
+    },
+    "HintConflict": {
+      "additionalProperties": false,
+      "properties": {
+        "dropped_source": {
+          "minLength": 1,
+          "title": "Dropped Source",
+          "type": "string"
+        },
+        "hint_id": {
+          "minLength": 1,
+          "title": "Hint Id",
+          "type": "string"
+        },
+        "kept_source": {
+          "minLength": 1,
+          "title": "Kept Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hint_id",
+        "kept_source",
+        "dropped_source"
+      ],
+      "title": "HintConflict",
+      "type": "object"
+    },
+    "HintPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/HintCandidate"
+          },
+          "title": "Candidates",
+          "type": "array"
+        },
+        "error_code": {
+          "minLength": 1,
+          "title": "Error Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "error_code"
+      ],
+      "title": "HintPayload",
+      "type": "object"
+    },
+    "HintResolutionResult": {
+      "additionalProperties": false,
+      "properties": {
+        "conflicts": {
+          "items": {
+            "$ref": "#/$defs/HintConflict"
+          },
+          "title": "Conflicts",
+          "type": "array"
+        },
+        "context": {
+          "$ref": "#/$defs/FailureContext"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ErrorEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "hint": {
+          "$ref": "#/$defs/HintPayload"
+        },
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "packs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Packs",
+          "type": "array"
+        },
+        "provider_discovery_attempted": {
+          "default": true,
+          "title": "Provider Discovery Attempted",
+          "type": "boolean"
+        },
+        "provider_failures": {
+          "items": {
+            "$ref": "#/$defs/ProviderFailure"
+          },
+          "title": "Provider Failures",
+          "type": "array"
+        },
+        "providers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Providers",
+          "type": "array"
+        },
+        "recovery_candidates": {
+          "items": {
+            "$ref": "#/$defs/RecoveryCandidate"
+          },
+          "title": "Recovery Candidates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ok",
+        "context",
+        "hint"
+      ],
+      "title": "HintResolutionResult",
+      "type": "object"
+    },
+    "ProvenanceKind": {
+      "enum": [
+        "observed",
+        "official",
+        "curated",
+        "provider",
+        "inferred"
+      ],
+      "title": "ProvenanceKind",
+      "type": "string"
+    },
+    "ProvenanceRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "kind": {
+          "$ref": "#/$defs/ProvenanceKind"
+        },
+        "provider_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider Id"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "source_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Id"
+        },
+        "source_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Path"
+        },
+        "source_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Type"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        }
+      },
+      "required": [
+        "kind",
+        "source"
+      ],
+      "title": "ProvenanceRecord",
+      "type": "object"
+    },
+    "ProviderFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ErrorEnvelope"
+        },
+        "provider_id": {
+          "minLength": 1,
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "stage": {
+          "minLength": 1,
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider_id",
+        "stage",
+        "error"
+      ],
+      "title": "ProviderFailure",
+      "type": "object"
+    },
+    "RecoveryCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "minLength": 1,
+          "title": "Action",
+          "type": "string"
+        },
+        "candidate_id": {
+          "minLength": 1,
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "confidence": {
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "provenance": {
+          "$ref": "#/$defs/ProvenanceRecord"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "summary",
+        "action",
+        "provenance"
+      ],
+      "title": "RecoveryCandidate",
+      "type": "object"
+    },
+    "RefactorArtifact": {
+      "additionalProperties": false,
+      "properties": {
+        "diff": {
+          "minLength": 1,
+          "title": "Diff",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "suite",
+            "resource"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "original_content": {
+          "minLength": 1,
+          "title": "Original Content",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "updated_content": {
+          "minLength": 1,
+          "title": "Updated Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "kind",
+        "original_content",
+        "updated_content",
+        "diff"
+      ],
+      "title": "RefactorArtifact",
+      "type": "object"
+    },
+    "RefactorChange": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "After"
+        },
+        "before": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Before"
+        },
+        "kind": {
+          "enum": [
+            "rename",
+            "documentation",
+            "replace-body-line",
+            "append-body-line",
+            "regenerate-body"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "summary"
+      ],
+      "title": "RefactorChange",
+      "type": "object"
+    },
+    "RefactorRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "assertions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Assertions",
+          "type": "array"
+        },
+        "documentation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Documentation"
+        },
+        "mode": {
+          "enum": [
+            "refactor",
+            "regenerate"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "rename_to": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rename To"
+        },
+        "replace": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Replace",
+          "type": "array"
+        },
+        "steps": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Steps",
+          "type": "array"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode",
+        "target"
+      ],
+      "title": "RefactorRequest",
+      "type": "object"
+    },
+    "RefactorRunVerification": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "execution": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExecutionProof"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "not-applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "detail"
+      ],
+      "title": "RefactorRunVerification",
+      "type": "object"
+    },
+    "RepairDiagnosticResult": {
+      "additionalProperties": false,
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/FailureContext"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ErrorEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/DiagnosticFinding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "hint": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HintPayload"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "hint_conflicts": {
+          "items": {
+            "$ref": "#/$defs/HintConflict"
+          },
+          "title": "Hint Conflicts",
+          "type": "array"
+        },
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "provider_failures": {
+          "items": {
+            "$ref": "#/$defs/ProviderFailure"
+          },
+          "title": "Provider Failures",
+          "type": "array"
+        },
+        "recovery_candidates": {
+          "items": {
+            "$ref": "#/$defs/RecoveryCandidate"
+          },
+          "title": "Recovery Candidates",
+          "type": "array"
+        },
+        "validation": {
+          "$ref": "#/$defs/ValidationResult"
+        },
+        "verification_mode": {
+          "default": "static-fallback",
+          "enum": [
+            "live-state",
+            "static-fallback"
+          ],
+          "title": "Verification Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ok",
+        "context",
+        "validation"
+      ],
+      "title": "RepairDiagnosticResult",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "info",
+        "warning",
+        "error",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "ValidationIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "column": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Column"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "severity",
+        "path"
+      ],
+      "title": "ValidationIssue",
+      "type": "object"
+    },
+    "ValidationResult": {
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ErrorEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ok",
+        "target"
+      ],
+      "title": "ValidationResult",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifact": {
+      "$ref": "#/$defs/RefactorArtifact"
+    },
+    "changes": {
+      "items": {
+        "$ref": "#/$defs/RefactorChange"
+      },
+      "title": "Changes",
+      "type": "array"
+    },
+    "correction_path": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Correction Path",
+      "type": "array"
+    },
+    "diagnostics": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RepairDiagnosticResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErrorEnvelope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "hint_resolution": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HintResolutionResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "manual_follow_up": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Manual Follow Up",
+      "type": "array"
+    },
+    "ok": {
+      "title": "Ok",
+      "type": "boolean"
+    },
+    "preventive_guidance": {
+      "items": {
+        "$ref": "#/$defs/HintCandidate"
+      },
+      "title": "Preventive Guidance",
+      "type": "array"
+    },
+    "request": {
+      "$ref": "#/$defs/RefactorRequest"
+    },
+    "run_verification": {
+      "$ref": "#/$defs/RefactorRunVerification"
+    },
+    "validation": {
+      "$ref": "#/$defs/ValidationResult"
+    }
+  },
+  "required": [
+    "ok",
+    "request",
+    "artifact",
+    "validation",
+    "run_verification"
+  ],
+  "title": "RefactorResult",
+  "type": "object"
+}

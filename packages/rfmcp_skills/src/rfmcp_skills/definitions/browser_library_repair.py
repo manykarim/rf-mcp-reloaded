@@ -22,10 +22,12 @@ from rfmcp_core.observability.events import JsonlEventWriter, WorkflowEvent
 from rfmcp_core.robot import build_failure_context, run_repair_diagnostics
 from rfmcp_core.robot.validation import validate_robot_artifact
 
+from rfmcp_skills.catalog import CanonicalSkillDefinition, WorkflowBoundaryStep
 from rfmcp_skills.fallbacks import (
     BROWSER_LIBRARY_FLAGSHIP_REPAIR_ID,
     fallback_commands_for,
 )
+from rfmcp_skills.inputs import RefactorSkillInput
 
 DEFAULT_FAILURE_MESSAGE = "No keyword with name 'New Page' found."
 BROWSER_LIBRARY_IMPORT = "Library    Browser"
@@ -42,23 +44,7 @@ MCP_TOOLS = (
 ROBOT_EXECUTION_TIMEOUT_SECONDS = 30
 
 
-@dataclass(frozen=True)
-class WorkflowBoundaryStep:
-    phase: str
-    surface: str
-    detail: str
-    reference: str
-
-
-@dataclass(frozen=True)
-class BrowserLibraryRepairDefinition:
-    skill_id: str
-    manifest: SkillManifest
-    asset_directory: str
-    boundary_doc_path: str
-    fallback_commands: tuple[str, ...]
-    mcp_tools: tuple[str, ...]
-    workflow_steps: tuple[WorkflowBoundaryStep, ...]
+BrowserLibraryRepairDefinition = CanonicalSkillDefinition
 
 
 @dataclass(frozen=True)
@@ -130,11 +116,12 @@ def browser_library_repair_definition() -> BrowserLibraryRepairDefinition:
     return BrowserLibraryRepairDefinition(
         skill_id=MANIFEST.skill_id,
         manifest=MANIFEST,
+        input_model=RefactorSkillInput,
         asset_directory=ASSET_DIRECTORY,
         boundary_doc_path=BOUNDARY_DOC_PATH,
         fallback_commands=tuple(MANIFEST.fallback_commands),
-        mcp_tools=MCP_TOOLS,
         workflow_steps=WORKFLOW_STEPS,
+        mcp_tools=MCP_TOOLS,
     )
 
 
