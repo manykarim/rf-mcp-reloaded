@@ -4,16 +4,13 @@
 
 ## Allowlisted MCP Tools
 
-| Tool | Why It Belongs in MCP |
-| --- | --- |
-| `rf_open_session` | Creates the live execution context that later steps reuse. |
-| `rf_get_session` | Reads the current live session state without rebuilding runtime context. |
-| `rf_execute_step` | Runs one real Robot Framework keyword in the session's live execution context, preserving variables, imports, and library state between steps. |
-| `rf_close_session` | Ends the live session explicitly so operators can stop the privileged path deliberately. |
-| `rf_get_context` | Reads bounded Robot Framework runtime variables and loaded libraries from the active live session. |
-| `rf_set_context` | Updates bounded Robot Framework runtime variables inside the active live session. |
-| `app_inspect_state` | Captures approved inspection snapshots (DOM, accessibility, screenshots, last API response, app context) from the real loaded library instances, with `OBSERVED` provenance. |
-| `rf_manage_session` | Declarative session management: import library/resource/variables (routed through the stepper so they hoist into `*** Settings ***`), set/get `*** Variables ***` entries, and declare Suite/Test setup/teardown and Test Tags for the final suite. |
+| Tool | Action(s) | Why It Belongs in MCP |
+| --- | --- | --- |
+| `rf_session` | `action`: `open` \| `get` \| `close` | Lifecycle of the live execution context: creates the namespace that later steps reuse, reads its current state, and tears it down deliberately. |
+| `rf_execute_step` | — | Runs one real Robot Framework keyword in the session's live execution context, preserving variables, imports, and library state between steps. Kept as its own tool because every authoring/repair loop runs many of these — a lean signature keeps the hot path cheap. |
+| `rf_context` | `action`: `get` \| `set` | Reads or writes bounded Robot Framework runtime variables (and reads loaded libraries) inside the active live session's namespace. Transient mutations only; for declarative `*** Variables ***` entries, see `rf_manage_session`. |
+| `rf_manage_session` | `action`: `import_library` \| `import_resource` \| `import_variables` \| `set_variable` \| `get_variable` \| `set_setup` \| `set_teardown` \| `set_tags` | Declarative session management: imports route through the stepper so they hoist into `*** Settings ***`; variable/setup/teardown/tag actions record entries destined for the final suite (`*** Variables ***`, `*** Settings ***`, per-test `[Setup]`/`[Teardown]`/`[Tags]`). `scope` enums tighten setup/teardown (`suite`\|`test`\|`test_case`) and tags (`suite`\|`test_case`). |
+| `app_inspect_state` | `snapshot_kind`: `dom` \| `accessibility` \| `screenshot` \| `last_api_response` \| `app_context` | Captures approved inspection snapshots from the real loaded library instances, with `OBSERVED` provenance. |
 
 Any MCP tool must be justified by a concrete live-state need and remain inside the explicit allowlist.
 

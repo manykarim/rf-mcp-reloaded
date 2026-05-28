@@ -10,11 +10,11 @@ Repair a failing Robot Framework test that uses Browser Library keywords without
 
 MCP is bounded to live-state triage only. This document describes the host-level workflow boundary; the pure Python flagship helper records that boundary but does not invoke host MCP tools itself.
 
-- `rf_open_repair_session` to create the live repair boundary
-- `rf_get_context` to inspect runtime variables and imported libraries
+- `rf_session` (action `open`) to create the live repair boundary
+- `rf_context` (action `get`) to inspect runtime variables and imported libraries
 - `app_inspect_state` to capture approved live application snapshots
-- `rf_execute_repair_step` to preserve stepwise live repair context
-- `rf_close_repair_session` to terminate the session explicitly
+- `rf_execute_step` to preserve stepwise live repair context
+- `rf_session` (action `close`) to terminate the session explicitly
 
 If live-state access is unavailable, skip this phase and continue entirely on the CLI path.
 

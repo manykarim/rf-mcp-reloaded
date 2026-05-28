@@ -14,11 +14,11 @@ This is the canonical host-agnostic repair workflow for the v1 Browser Library f
 
 Use live-state MCP only while runtime context or application inspection adds value. These are host-level steps around the deterministic helper; the Python workflow definition records the boundary but does not call host MCP tools directly.
 
-- `rf_open_session`
-- `rf_get_context`
+- `rf_session` (action: open|get|close)
+- `rf_context` (action: get|set)
 - `app_inspect_state`
 - `rf_execute_step`
-- `rf_close_session`
+- `rf_manage_session` (imports, declared variables, setup/teardown, tags)
 
 These tools help triage the failure, but they do not replace the deterministic repair proof.
 

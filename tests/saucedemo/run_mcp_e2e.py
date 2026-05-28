@@ -18,14 +18,12 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from rfmcp_core.contracts import SessionAction, SnapshotKind, TransportKind
 from rfmcp_core.robot import render_suite_text
 from rfmcp_core.runtime.session import LiveSessionStore
 from rfmcp_mcp.tools.app_inspect_state import build_app_inspect_state_tool
-from rfmcp_mcp.tools.rf_close_session import build_close_session_tool
 from rfmcp_mcp.tools.rf_execute_step import build_execute_step_tool
-from rfmcp_mcp.tools.rf_get_context import build_get_context_tool
-from rfmcp_mcp.tools.rf_get_session import build_get_session_tool
-from rfmcp_mcp.tools.rf_open_session import build_open_session_tool
+from rfmcp_mcp.tools.rf_session import build_session_tool
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SUITE_DIR = Path(__file__).resolve().parent
@@ -136,20 +134,19 @@ def run_robot(name: str, suite_path: Path) -> dict:
 def run_scenario(name: str, steps: list[tuple[str, str]], tools: dict) -> dict:
     print(f"\n{'─' * 72}\nSCENARIO: {name}\n{'─' * 72}")
     store = LiveSessionStore()
-    open_session = tools["open"](store)
+    session_tool = tools["session"](store)
     execute_step = tools["step"](store)
-    get_session = tools["session"](store)
     inspect_state = tools["inspect"](store)
-    close_session = tools["close"](store)
 
     tool_calls = 0
     failed_tool_calls = 0
     issues: list[dict] = []
     step_log: list[dict] = []
 
-    session_id = open_session("stdio")["session"]["session_id"]
+    opened = session_tool(action=SessionAction.OPEN, transport=TransportKind.STDIO)
+    session_id = opened["session"]["session_id"]
     tool_calls += 1
-    print(f"[rf_open_session] session_id={session_id}")
+    print(f"[rf_session action=open] session_id={session_id}")
 
     aborted = False
     for index, (intent, instruction) in enumerate(steps, start=1):
@@ -172,7 +169,7 @@ def run_scenario(name: str, steps: list[tuple[str, str]], tools: dict) -> dict:
         if not ok:
             failed_tool_calls += 1
             error = result.get("error", {})
-            dom = inspect_state(session_id, "dom")  # live snapshot to diagnose
+            dom = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.DOM)  # live snapshot to diagnose
             tool_calls += 1
             issues.append(
                 {
@@ -189,11 +186,11 @@ def run_scenario(name: str, steps: list[tuple[str, str]], tools: dict) -> dict:
             aborted = True
             break
 
-    session_state = get_session(session_id)
+    session_state = session_tool(action=SessionAction.GET, session_id=session_id)
     tool_calls += 1
     record_snapshot = store.get_record(session_id)
     recorded_steps = list(record_snapshot.steps) if record_snapshot else []
-    close_session(session_id)
+    session_tool(action=SessionAction.CLOSE, session_id=session_id)
     tool_calls += 1
 
     scenario_passed = not aborted
@@ -238,12 +235,9 @@ def main() -> int:
     print("=" * 72)
 
     tools = {
-        "open": build_open_session_tool,
+        "session": build_session_tool,
         "step": build_execute_step_tool,
-        "session": build_get_session_tool,
-        "context": build_get_context_tool,
         "inspect": build_app_inspect_state_tool,
-        "close": build_close_session_tool,
     }
 
     results = [run_scenario(name, steps, tools) for name, steps in SCENARIOS.items()]

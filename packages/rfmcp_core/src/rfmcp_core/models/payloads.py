@@ -41,6 +41,88 @@ class SessionStatus(str, Enum):
     INTERRUPTED = "interrupted"
 
 
+class TransportKind(str, Enum):
+    """Transport that hosts the MCP session.
+
+    ``stdio`` is the default in-process transport. ``http`` requires a loopback
+    host (enforced by the attach-policy validator) and is the only transport
+    that admits attach-bridge requests.
+    """
+
+    STDIO = "stdio"
+    HTTP = "http"
+
+
+class SessionAction(str, Enum):
+    """Lifecycle action for ``rf_session``.
+
+    - ``open``: create a new live session, returning its summary including ``session_id``.
+    - ``get``: read the current summary for an existing session.
+    - ``close``: terminate an existing session and release its execution context.
+    """
+
+    OPEN = "open"
+    GET = "get"
+    CLOSE = "close"
+
+
+class ContextAction(str, Enum):
+    """Runtime-context action for ``rf_context``.
+
+    - ``get``: read live runtime variables and loaded libraries from the session's namespace.
+    - ``set``: write or update one runtime variable inside the live namespace (transient,
+      not recorded as a declared ``*** Variables ***`` entry — use ``rf_manage_session``
+      with ``action='set_variable'`` for declarative entries).
+    """
+
+    GET = "get"
+    SET = "set"
+
+
+class ManageSessionAction(str, Enum):
+    """Declarative session-management action for ``rf_manage_session``.
+
+    Import actions are routed through the same stepper as ``rf_execute_step`` and
+    are hoisted into the suite's ``*** Settings ***`` section when the final
+    artifact is rendered. Variable, setup/teardown, and tag actions record
+    declarations destined for ``*** Variables ***``, ``*** Settings ***``, or
+    per-test ``[Setup]``/``[Teardown]``/``[Tags]``.
+    """
+
+    IMPORT_LIBRARY = "import_library"
+    IMPORT_RESOURCE = "import_resource"
+    IMPORT_VARIABLES = "import_variables"
+    SET_VARIABLE = "set_variable"
+    GET_VARIABLE = "get_variable"
+    SET_SETUP = "set_setup"
+    SET_TEARDOWN = "set_teardown"
+    SET_TAGS = "set_tags"
+
+
+class SettingScope(str, Enum):
+    """Scope for ``set_setup`` / ``set_teardown`` actions.
+
+    - ``suite``: ``Suite Setup`` / ``Suite Teardown`` in ``*** Settings ***``.
+    - ``test``: ``Test Setup`` / ``Test Teardown`` in ``*** Settings ***`` (applies to all tests).
+    - ``test_case``: per-test ``[Setup]`` / ``[Teardown]`` in the test case body.
+    """
+
+    SUITE = "suite"
+    TEST = "test"
+    TEST_CASE = "test_case"
+
+
+class TagScope(str, Enum):
+    """Scope for ``set_tags`` action.
+
+    - ``suite``: ``Test Tags`` in ``*** Settings ***`` (applies to all tests).
+    - ``test_case``: per-test ``[Tags]`` in the test case body.
+    """
+
+    SUITE = "suite"
+    TEST_CASE = "test_case"
+
+
 class ErrorEnvelope(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

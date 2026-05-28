@@ -13,14 +13,16 @@ for path in [
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
+from rfmcp_core.contracts import SessionAction, TransportKind  # noqa: E402
 from rfmcp_core.runtime.session import LiveSessionStore  # noqa: E402
 from rfmcp_mcp.tools._registry import ALLOWLISTED_TOOL_NAMES, MAX_USER_FACING_TOOLS  # noqa: E402
 from rfmcp_mcp.tools.rf_manage_session import build_manage_session_tool  # noqa: E402
-from rfmcp_mcp.tools.rf_open_session import build_open_session_tool  # noqa: E402
+from rfmcp_mcp.tools.rf_session import build_session_tool  # noqa: E402
 
 
 def _open(store: LiveSessionStore) -> str:
-    return build_open_session_tool(store)("stdio")["session"]["session_id"]
+    response = build_session_tool(store)(action=SessionAction.OPEN, transport=TransportKind.STDIO)
+    return response["session"]["session_id"]
 
 
 class ManageSessionAllowlistTests(unittest.TestCase):

@@ -1,4 +1,4 @@
-Use the connected RobotMCP MCP server (tools prefixed rf_ : rf_open_session, rf_execute_step, rf_get_session, rf_get_context, rf_set_context, app_inspect_state, rf_close_session) to create a Robot Framework test suite and execute it STEP BY STEP against a real browser, then build the final suite.
+Use the connected RobotMCP MCP server (5 tools: rf_session [action=open|get|close], rf_execute_step, rf_context [action=get|set], rf_manage_session [imports + declarative settings/variables/tags], app_inspect_state [snapshot_kind=dom|accessibility|screenshot|last_api_response|app_context]) to create a Robot Framework test suite and execute it STEP BY STEP against a real browser, then build the final suite.
 
 Scenario — target site https://demoshop.makrocode.de/ (a shop called "Flowline Supply"):
 - Open https://demoshop.makrocode.de/
@@ -10,8 +10,8 @@ Scenario — target site https://demoshop.makrocode.de/ (a shop called "Flowline
 - Assert checkout was successful
 
 How to work:
-1. Open a live session with rf_open_session.
-2. Execute ONE Robot Framework keyword per step via rf_execute_step. The site uses Browser Library. Begin with these setup steps (in order):
+1. Open a live session with rf_session(action="open"). Capture the returned session_id.
+2. Execute ONE Robot Framework keyword per step via rf_execute_step(session_id, instruction). Begin with these setup steps (in order):
    - Import Library    Browser
    - New Browser    chromium    headless=True
    - Set Browser Timeout    60s
@@ -19,11 +19,11 @@ How to work:
    - New Page
    - Go To    https://demoshop.makrocode.de/    wait_until=domcontentloaded
    Do NOT use "New Page <url>" — the page "load" event can hang; always navigate with "Go To <url>    wait_until=domcontentloaded".
-3. You do NOT know this site's selectors. Use app_inspect_state with snapshot_kind="dom" to read the live DOM and discover the REAL selectors for: product "add to cart" controls, the cart count/indicator, the cart page, and the checkout controls. Inspect first, then act. If a step returns ok=false (step-failed), inspect the DOM again, correct the selector, and retry — this iteration is expected and is the point of stepwise authoring.
+3. You do NOT know this site's selectors. Use app_inspect_state(session_id, snapshot_kind="dom") to read the live DOM and discover the REAL selectors for: product "add to cart" controls, the cart count/indicator, the cart page, and the checkout controls. Inspect first, then act. If a step returns ok=false (step-failed), inspect the DOM again, correct the selector, and retry — this iteration is expected and is the point of stepwise authoring.
 4. Prefer Browser Library inline assertions, e.g. "Get Text    <selector>    ==    <value>" or "Get Element Count    <selector>    ==    2", and "Get Url    *=    <fragment>".
-5. When all scenario steps pass live, read the recorded session steps (rf_get_session / the steps you ran) and BUILD the final suite: write tests/demoshop/demoshop_checkout_authored.robot with header "*** Settings ***" + "Library    Browser" + "*** Test Cases ***" + one Test Case whose body is the successful steps in order (omit the "Import Library    Browser" line since Library is declared in Settings).
+5. When all scenario steps pass live, read the recorded session steps with rf_session(action="get", session_id=...) and BUILD the final suite: write tests/demoshop/demoshop_checkout_authored.robot with header "*** Settings ***" + "Library    Browser" + "*** Test Cases ***" + one Test Case whose body is the successful steps in order (omit the "Import Library    Browser" line since Library is declared in Settings).
 6. Prove it runnable with Bash: uv run --group web python -m robot --outputdir tests/demoshop/results tests/demoshop/demoshop_checkout_authored.robot
-7. Close the session with rf_close_session.
+7. Close the session with rf_session(action="close", session_id=...).
 
 Keep going until the suite is built AND the standalone robot run passes; do not stop early. If the live site is intermittently slow, raise the Browser timeout and retry rather than giving up.
 

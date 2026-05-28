@@ -41,12 +41,10 @@ class LiveMcpRepairProofTests(unittest.TestCase):
         self.assertEqual(
             tools,
             {
-                "rf_open_session",
+                "rf_session",
                 "rf_execute_step",
-                "rf_get_context",
+                "rf_context",
                 "app_inspect_state",
-                "rf_set_context",
-                "rf_close_session",
             },
         )
 

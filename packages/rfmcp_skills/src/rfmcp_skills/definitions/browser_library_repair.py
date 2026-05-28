@@ -35,11 +35,11 @@ BROWSER_KEYWORDS = ("New Browser", "New Page", "Click", "Type Text", "Get Title"
 ASSET_DIRECTORY = f"assets/skills/{BROWSER_LIBRARY_FLAGSHIP_REPAIR_ID}"
 BOUNDARY_DOC_PATH = "docs/browser-library-flagship-repair.md"
 MCP_TOOLS = (
-    "rf_open_session",
-    "rf_get_context",
+    "rf_session",
+    "rf_context",
     "app_inspect_state",
     "rf_execute_step",
-    "rf_close_session",
+    "rf_manage_session",
 )
 ROBOT_EXECUTION_TIMEOUT_SECONDS = 30
 

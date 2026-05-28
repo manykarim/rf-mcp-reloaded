@@ -2,6 +2,7 @@
 
 from rfmcp_core.models.hint_pack import HintEntry, HintPackManifest
 from rfmcp_core.models.payloads import (
+    ContextAction,
     DiagnosticFinding,
     ErrorEnvelope,
     ExecutionProof,
@@ -19,6 +20,7 @@ from rfmcp_core.models.payloads import (
     HintPayload,
     HintResolutionResult,
     InspectionSnapshotResult,
+    ManageSessionAction,
     ProviderFailure,
     ProviderMetadata,
     ProvenanceKind,
@@ -30,7 +32,9 @@ from rfmcp_core.models.payloads import (
     RefactorRunVerification,
     RecoveryCandidate,
     RepairDiagnosticResult,
+    SessionAction,
     SessionSummary,
+    SettingScope,
     StepResult,
     ScaffoldArtifact,
     ScaffoldResult,
@@ -40,12 +44,15 @@ from rfmcp_core.models.payloads import (
     SessionStatus,
     SnapshotKind,
     SkillManifest,
+    TagScope,
+    TransportKind,
     ValidationIssue,
     ValidationResult,
 )
 from rfmcp_core.models.policy import LocalPolicyDefaults
 
 __all__ = [
+    "ContextAction",
     "DiagnosticFinding",
     "ErrorEnvelope",
     "ExecutionProof",
@@ -66,6 +73,7 @@ __all__ = [
     "HintResolutionResult",
     "InspectionSnapshotResult",
     "LocalPolicyDefaults",
+    "ManageSessionAction",
     "ProviderFailure",
     "ProviderMetadata",
     "ProvenanceKind",
@@ -77,7 +85,9 @@ __all__ = [
     "RefactorRunVerification",
     "RecoveryCandidate",
     "RepairDiagnosticResult",
+    "SessionAction",
     "SessionSummary",
+    "SettingScope",
     "StepResult",
     "RobotContextMutationResult",
     "RobotContextView",
@@ -87,6 +97,8 @@ __all__ = [
     "SessionStatus",
     "SnapshotKind",
     "SkillManifest",
+    "TagScope",
+    "TransportKind",
     "ValidationIssue",
     "ValidationResult",
 ]

@@ -15,11 +15,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from rfmcp_core.runtime.session import LiveSessionStore
 from rfmcp_mcp.tools.app_inspect_state import build_app_inspect_state_tool
-from rfmcp_mcp.tools.rf_close_session import build_close_session_tool
+from rfmcp_mcp.tools.rf_context import build_context_tool
 from rfmcp_mcp.tools.rf_execute_step import build_execute_step_tool
-from rfmcp_mcp.tools.rf_get_context import build_get_context_tool
-from rfmcp_mcp.tools.rf_open_session import build_open_session_tool
-from rfmcp_mcp.tools.rf_set_context import build_set_context_tool
+from rfmcp_mcp.tools.rf_manage_session import build_manage_session_tool  # noqa: F401  (kept for runtime registry parity)
+from rfmcp_mcp.tools.rf_session import build_session_tool
 
 # A failure that needs no browser: ${STATUS} is unset, so the assertion fails live;
 # the repair sets it, and the identical re-run then passes.
@@ -73,12 +72,10 @@ def run_live_mcp_repair_proof() -> LiveMcpProof:
     _require_proof_policy()
 
     store = LiveSessionStore()
-    open_session = build_open_session_tool(store)
+    session_tool = build_session_tool(store)
     execute_step = build_execute_step_tool(store)
-    get_context = build_get_context_tool(store)
-    set_context = build_set_context_tool(store)
+    context_tool = build_context_tool(store)
     inspect_state = build_app_inspect_state_tool(store)
-    close_session = build_close_session_tool(store)
 
     calls: list[LiveMcpProofCall] = []
 
@@ -97,10 +94,17 @@ def run_live_mcp_repair_proof() -> LiveMcpProof:
             calls=list(calls),
         )
 
+    from rfmcp_core.contracts import (
+        ContextAction,
+        SessionAction,
+        SnapshotKind,
+        TransportKind,
+    )
+
     session_id: str | None = None
     reproduced_failure = repaired = rerun_ok = False
     try:
-        opened = record("rf_open_session", open_session("stdio"))
+        opened = record("rf_session", session_tool(action=SessionAction.OPEN, transport=TransportKind.STDIO))
         if not opened.get("ok"):
             return proof(False, False, False)
         session_id = opened["session"]["session_id"]
@@ -109,10 +113,27 @@ def run_live_mcp_repair_proof() -> LiveMcpProof:
         # A genuine repair starts from a real keyword failure, not a session/lifecycle error.
         reproduced_failure = (not broken["ok"]) and broken.get("error", {}).get("code") == "step-failed"
 
-        record("rf_get_context", get_context(session_id), "diagnose runtime context")
-        record("app_inspect_state", inspect_state(session_id, "app_context"), "inspect app context")
+        record(
+            "rf_context",
+            context_tool(session_id=session_id, action=ContextAction.GET),
+            "diagnose runtime context",
+        )
+        record(
+            "app_inspect_state",
+            inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.APP_CONTEXT),
+            "inspect app context",
+        )
 
-        repair = record("rf_set_context", set_context(session_id, "${STATUS}", "PASS"), "apply repair")
+        repair = record(
+            "rf_context",
+            context_tool(
+                session_id=session_id,
+                action=ContextAction.SET,
+                key="${STATUS}",
+                value="PASS",
+            ),
+            "apply repair",
+        )
         repaired = bool(repair["ok"])
 
         rerun = record("rf_execute_step", execute_step(session_id, _REPAIR_STEP), "rerun proof")
@@ -120,7 +141,10 @@ def run_live_mcp_repair_proof() -> LiveMcpProof:
     finally:
         if session_id is not None:
             # Always tear down the live RF context so EXECUTION_CONTEXTS never leaks.
-            record("rf_close_session", close_session(session_id))
+            record(
+                "rf_session",
+                session_tool(action=SessionAction.CLOSE, session_id=session_id),
+            )
 
     return proof(reproduced_failure, repaired, rerun_ok)
 

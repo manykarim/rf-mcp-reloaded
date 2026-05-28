@@ -62,7 +62,7 @@ class BrowserLibraryFlagshipRepairWorkflowTests(unittest.TestCase):
         self.assertEqual(definition.manifest.skill_id, BROWSER_LIBRARY_FLAGSHIP_REPAIR_ID)
         self.assertEqual(tuple(definition.manifest.fallback_commands), fallback_commands_for(BROWSER_LIBRARY_FLAGSHIP_REPAIR_ID))
         self.assertEqual(definition.asset_directory, "assets/skills/browser-library-flagship-repair")
-        self.assertIn("rf_open_session", definition.mcp_tools)
+        self.assertIn("rf_session", definition.mcp_tools)
         self.assertIn("rfmcp validate <target.robot> --json", definition.fallback_commands)
         rendered = render_fallback_commands(
             BROWSER_LIBRARY_FLAGSHIP_REPAIR_ID,
@@ -289,8 +289,8 @@ class BrowserLibraryFlagshipRepairWorkflowTests(unittest.TestCase):
         asset_doc = (REPO_ROOT / "assets" / "skills" / "browser-library-flagship-repair" / "README.md").read_text()
         workflow_doc = (REPO_ROOT / "docs" / "browser-library-flagship-repair.md").read_text()
 
-        self.assertIn("rf_open_session", asset_doc)
-        self.assertIn("rf_get_context", workflow_doc)
+        self.assertIn("rf_session", asset_doc)
+        self.assertIn("rf_context", workflow_doc)
         self.assertIn("rfmcp repair-diagnostics", workflow_doc)
         self.assertIn("rfmcp validate", asset_doc)
         self.assertIn("python -m robot --output NONE --report NONE --log NONE", workflow_doc)

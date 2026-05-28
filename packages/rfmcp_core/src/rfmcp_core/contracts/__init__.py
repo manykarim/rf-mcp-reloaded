@@ -21,6 +21,14 @@ from rfmcp_core.contracts.hints import (
 )
 from rfmcp_core.contracts.provenance import ProvenanceKind, ProvenanceRecord
 from rfmcp_core.contracts.session import SessionSummary, StepResult, SessionStatus
+from rfmcp_core.models.payloads import (
+    ContextAction,
+    ManageSessionAction,
+    SessionAction,
+    SettingScope,
+    TagScope,
+    TransportKind,
+)
 from rfmcp_core.contracts.results import (
     ExecutionProof,
     GenerationEvidenceItem,
@@ -48,6 +56,7 @@ from rfmcp_core.contracts.runtime import (
 )
 
 __all__ = [
+    "ContextAction",
     "DiagnosticFinding",
     "ErrorEnvelope",
     "ExecutionProof",
@@ -67,6 +76,7 @@ __all__ = [
     "HintPayload",
     "HintResolutionResult",
     "InspectionSnapshotResult",
+    "ManageSessionAction",
     "ProviderFailure",
     "ProviderMetadata",
     "ProvenanceKind",
@@ -78,7 +88,9 @@ __all__ = [
     "RefactorRunVerification",
     "RecoveryCandidate",
     "RepairDiagnosticResult",
+    "SessionAction",
     "SessionSummary",
+    "SettingScope",
     "StepResult",
     "RobotContextMutationResult",
     "RobotContextView",
@@ -88,6 +100,8 @@ __all__ = [
     "SessionStatus",
     "SnapshotKind",
     "SkillManifest",
+    "TagScope",
+    "TransportKind",
     "ValidationIssue",
     "ValidationResult",
 ]

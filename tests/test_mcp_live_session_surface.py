@@ -15,19 +15,21 @@ for path in [
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
+from rfmcp_core.models.payloads import (  # noqa: E402
+    ContextAction,
+    SessionAction,
+    SnapshotKind,
+    TransportKind,
+)
 from rfmcp_core.runtime.session import LiveSessionStore  # noqa: E402
 from rfmcp_core.runtime.stepper import LiveStepper  # noqa: E402
-from rfmcp_core.models.payloads import SnapshotKind  # noqa: E402
 from rfmcp_mcp.security.attach_policy import PolicyGateError, validate_transport_policy  # noqa: E402
 from rfmcp_mcp.server import build_server  # noqa: E402
 from rfmcp_mcp.tools._registry import ALLOWLISTED_TOOL_NAMES, MAX_USER_FACING_TOOLS  # noqa: E402
 from rfmcp_mcp.tools.app_inspect_state import build_app_inspect_state_tool  # noqa: E402
-from rfmcp_mcp.tools.rf_close_session import build_close_session_tool  # noqa: E402
-from rfmcp_mcp.tools.rf_get_context import build_get_context_tool  # noqa: E402
+from rfmcp_mcp.tools.rf_context import build_context_tool  # noqa: E402
 from rfmcp_mcp.tools.rf_execute_step import build_execute_step_tool  # noqa: E402
-from rfmcp_mcp.tools.rf_get_session import build_get_session_tool  # noqa: E402
-from rfmcp_mcp.tools.rf_open_session import build_open_session_tool  # noqa: E402
-from rfmcp_mcp.tools.rf_set_context import build_set_context_tool  # noqa: E402
+from rfmcp_mcp.tools.rf_session import build_session_tool  # noqa: E402
 from rfmcp_mcp.transports.http import create_http_server  # noqa: E402
 
 
@@ -53,20 +55,37 @@ class _InterruptEngine:
         pass
 
 
+def _open(session_tool, **kwargs):
+    return session_tool(action=SessionAction.OPEN, transport=TransportKind.STDIO, **kwargs)
+
+
+def _get(session_tool, session_id: str):
+    return session_tool(action=SessionAction.GET, session_id=session_id)
+
+
+def _close(session_tool, session_id: str):
+    return session_tool(action=SessionAction.CLOSE, session_id=session_id)
+
+
+def _ctx_get(context_tool, session_id: str, keys: list[str] | None = None):
+    return context_tool(session_id=session_id, action=ContextAction.GET, keys=keys)
+
+
+def _ctx_set(context_tool, session_id: str, key: str, value):
+    return context_tool(session_id=session_id, action=ContextAction.SET, key=key, value=value)
+
+
 class McpLiveSessionSurfaceTests(unittest.TestCase):
     def test_allowlisted_surface_stays_small_and_session_only(self) -> None:
         self.assertLessEqual(len(ALLOWLISTED_TOOL_NAMES), MAX_USER_FACING_TOOLS)
         self.assertEqual(
             ALLOWLISTED_TOOL_NAMES,
             (
-                "rf_open_session",
-                "rf_get_session",
+                "rf_session",
                 "rf_execute_step",
-                "rf_close_session",
-                "rf_get_context",
-                "rf_set_context",
-                "app_inspect_state",
+                "rf_context",
                 "rf_manage_session",
+                "app_inspect_state",
             ),
         )
         combined = " ".join(ALLOWLISTED_TOOL_NAMES)
@@ -111,21 +130,19 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
     def test_live_session_tools_use_structured_error_path(self) -> None:
         store = LiveSessionStore()
-        stepper = LiveStepper(store)
-        open_session = build_open_session_tool(store)
-        get_session = build_get_session_tool(store)
+        LiveStepper(store)
+        session_tool = build_session_tool(store)
         execute_step = build_execute_step_tool(store)
-        close_session = build_close_session_tool(store)
 
-        opened = open_session("stdio")
+        opened = _open(session_tool)
         self.assertTrue(opened["ok"])
         session_id = opened["session"]["session_id"]
 
-        unsupported = open_session("tcp")
+        unsupported = session_tool(action=SessionAction.OPEN, transport="tcp")
         self.assertFalse(unsupported["ok"])
         self.assertEqual(unsupported["error"]["code"], "unsupported-transport")
 
-        session_status = get_session(session_id)
+        session_status = _get(session_tool, session_id)
         self.assertTrue(session_status["ok"])
         self.assertEqual(session_status["session"]["status"], "open")
 
@@ -135,37 +152,46 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
         interrupt_store = LiveSessionStore()
         interrupt_store.engine_factory = lambda sid, libs: _InterruptEngine()
-        interrupt_open = build_open_session_tool(interrupt_store)
+        interrupt_session = build_session_tool(interrupt_store)
         interrupt_execute = build_execute_step_tool(interrupt_store)
-        interrupt_sid = interrupt_open("stdio")["session"]["session_id"]
+        interrupt_sid = _open(interrupt_session)["session"]["session_id"]
         interrupted = interrupt_execute(interrupt_sid, "Retry failing step")
         self.assertFalse(interrupted["ok"])
         self.assertEqual(interrupted["error"]["code"], "step-interrupted")
         self.assertEqual(interrupted["session"]["status"], "interrupted")
 
-        closed = close_session(session_id)
+        closed = _close(session_tool, session_id)
         self.assertTrue(closed["ok"])
-        restarted = open_session("stdio")
+        restarted = _open(session_tool)
         self.assertTrue(restarted["ok"])
         restarted_id = restarted["session"]["session_id"]
-        closed = close_session(restarted_id)
+        closed = _close(session_tool, restarted_id)
         self.assertEqual(closed["session"]["status"], "closed")
 
         after_close = execute_step(restarted_id, "Attempt after close")
         self.assertFalse(after_close["ok"])
         self.assertEqual(after_close["error"]["code"], "session-not-open")
 
-        missing = get_session("missing-session")
+        missing = _get(session_tool, "missing-session")
         self.assertFalse(missing["ok"])
         self.assertEqual(missing["error"]["code"], "session-not-found")
 
+    def test_session_action_get_close_require_session_id(self) -> None:
+        store = LiveSessionStore()
+        session_tool = build_session_tool(store)
+        missing_get = session_tool(action=SessionAction.GET)
+        self.assertFalse(missing_get["ok"])
+        self.assertEqual(missing_get["error"]["code"], "missing-session-id")
+        missing_close = session_tool(action=SessionAction.CLOSE)
+        self.assertFalse(missing_close["ok"])
+        self.assertEqual(missing_close["error"]["code"], "missing-session-id")
+
     def test_live_step_executes_real_keywords_with_persistent_state(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
+        session_tool = build_session_tool(store)
         execute_step = build_execute_step_tool(store)
-        close_session = build_close_session_tool(store)
 
-        session_id = open_session("stdio")["session"]["session_id"]
+        session_id = _open(session_tool)["session"]["session_id"]
 
         # Real keyword execution with return-value assignment into the live namespace.
         assigned = execute_step(session_id, "${result} =    Evaluate    1 + 2")
@@ -187,47 +213,45 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
         self.assertIn("1 != 2", failed["error"]["message"])
         self.assertEqual(failed["error"]["provenance"]["source"], "live-execution")
 
-        close_session(session_id)
+        _close(session_tool, session_id)
 
     def test_context_tools_support_read_and_write(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
-        close_session = build_close_session_tool(store)
-        get_context = build_get_context_tool(store)
-        set_context = build_set_context_tool(store)
+        session_tool = build_session_tool(store)
+        context_tool = build_context_tool(store)
 
-        opened = open_session("stdio")
+        opened = _open(session_tool)
         session_id = opened["session"]["session_id"]
 
-        baseline = get_context(session_id)
+        baseline = _ctx_get(context_tool, session_id)
         self.assertTrue(baseline["ok"])
         # Real Robot Framework built-ins are present (live namespace, not a placeholder dict).
         self.assertIn("${/}", baseline["context"]["variables"])
         self.assertIn("BuiltIn", baseline["context"]["libraries"])
 
-        updated = set_context(session_id, "${BROWSER}", {"name": "chromium", "headless": True})
+        updated = _ctx_set(context_tool, session_id, "${BROWSER}", {"name": "chromium", "headless": True})
         self.assertTrue(updated["ok"])
         self.assertEqual(updated["context"]["key"], "${BROWSER}")
         self.assertEqual(updated["context"]["value"], {"name": "chromium", "headless": True})
 
-        narrowed = get_context(session_id, ["${BROWSER}"])
+        narrowed = _ctx_get(context_tool, session_id, ["${BROWSER}"])
         self.assertTrue(narrowed["ok"])
         self.assertEqual(narrowed["context"]["variables"], {"${BROWSER}": {"name": "chromium", "headless": True}})
 
-        missing = get_context("missing-session")
+        missing = _ctx_get(context_tool, "missing-session")
         self.assertFalse(missing["ok"])
         self.assertEqual(missing["error"]["code"], "session-not-found")
         self.assertEqual(missing["error"]["provenance"]["source"], "session-store")
         self.assertIn("context reads", missing["error"]["suggested_next_step"])
 
-        close_session(session_id)
-        blocked_write = set_context(session_id, "${AFTER_CLOSE}", True)
+        _close(session_tool, session_id)
+        blocked_write = _ctx_set(context_tool, session_id, "${AFTER_CLOSE}", True)
         self.assertFalse(blocked_write["ok"])
         self.assertEqual(blocked_write["error"]["code"], "session-not-open")
         self.assertEqual(blocked_write["error"]["provenance"]["source"], "session-store")
         self.assertIn("context mutation", blocked_write["error"]["suggested_next_step"])
 
-        closed = get_context(session_id)
+        closed = _ctx_get(context_tool, session_id)
         self.assertFalse(closed["ok"])
         self.assertEqual(closed["error"]["code"], "session-not-open")
         self.assertEqual(closed["error"]["provenance"]["source"], "session-store")
@@ -235,17 +259,16 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
     def test_context_set_get_roundtrip_through_live_namespace(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
-        get_context = build_get_context_tool(store)
-        set_context = build_set_context_tool(store)
+        session_tool = build_session_tool(store)
+        context_tool = build_context_tool(store)
         execute_step = build_execute_step_tool(store)
 
-        session_id = open_session("stdio")["session"]["session_id"]
+        session_id = _open(session_tool)["session"]["session_id"]
 
-        written = set_context(session_id, "${X}", 7)
+        written = _ctx_set(context_tool, session_id, "${X}", 7)
         self.assertTrue(written["ok"])
 
-        read = get_context(session_id, ["${X}"])
+        read = _ctx_get(context_tool, session_id, ["${X}"])
         self.assertTrue(read["ok"])
         self.assertEqual(read["context"]["variables"], {"${X}": 7})
 
@@ -255,69 +278,67 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
     def test_context_mutation_rejects_invalid_keys_without_mutating_session_state(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
-        get_context = build_get_context_tool(store)
-        set_context = build_set_context_tool(store)
+        session_tool = build_session_tool(store)
+        context_tool = build_context_tool(store)
 
-        opened = open_session("stdio")
+        opened = _open(session_tool)
         session_id = opened["session"]["session_id"]
 
-        invalid = set_context(session_id, "", "bad-value")
+        invalid = _ctx_set(context_tool, session_id, "", "bad-value")
         self.assertFalse(invalid["ok"])
         self.assertEqual(invalid["error"]["code"], "invalid-context-key")
         self.assertEqual(invalid["error"]["provenance"]["source"], "runtime-context")
         self.assertIn("non-empty Robot Framework variable name", invalid["error"]["suggested_next_step"])
 
         # Non-empty but RF-syntactically invalid name (no ${} braces).
-        malformed = set_context(session_id, "NOBRACES", "x")
+        malformed = _ctx_set(context_tool, session_id, "NOBRACES", "x")
         self.assertFalse(malformed["ok"])
         self.assertEqual(malformed["error"]["code"], "invalid-context-key")
         self.assertEqual(malformed["error"]["provenance"]["source"], "runtime-context")
 
-        context = get_context(session_id)
+        context = _ctx_get(context_tool, session_id)
         self.assertTrue(context["ok"])
         self.assertNotIn("", context["context"]["variables"])
         self.assertNotIn("NOBRACES", context["context"]["variables"])
 
     def test_interrupted_sessions_still_allow_context_reads(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
-        get_context = build_get_context_tool(store)
-        set_context = build_set_context_tool(store)
+        session_tool = build_session_tool(store)
+        context_tool = build_context_tool(store)
         inspect_state = build_app_inspect_state_tool(store)
 
         store.engine_factory = lambda sid, libs: _InterruptEngine()
         execute_step = build_execute_step_tool(store)
 
-        opened = open_session("stdio")
+        opened = _open(session_tool)
         session_id = opened["session"]["session_id"]
 
         interrupted = execute_step(session_id, "Pause after failure")
         self.assertFalse(interrupted["ok"])
         self.assertEqual(interrupted["session"]["status"], "interrupted")
 
-        context = get_context(session_id)
+        context = _ctx_get(context_tool, session_id)
         self.assertTrue(context["ok"])
         self.assertIn("${CURRENT_TEST}", context["context"]["variables"])
 
-        blocked_write = set_context(session_id, "${AFTER_INTERRUPT}", True)
+        blocked_write = _ctx_set(context_tool, session_id, "${AFTER_INTERRUPT}", True)
         self.assertFalse(blocked_write["ok"])
         self.assertEqual(blocked_write["error"]["code"], "session-not-open")
         self.assertEqual(blocked_write["error"]["provenance"]["source"], "session-store")
 
-        snapshot = inspect_state(session_id, "app_context")
+        snapshot = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.APP_CONTEXT)
         self.assertTrue(snapshot["ok"])
         self.assertIn("BuiltIn", snapshot["snapshot"]["payload"]["loaded_libraries"])
 
     def test_context_write_policy_and_session_denials_are_structured(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
-        set_context = build_set_context_tool(store)
-        opened = open_session("stdio")
+        session_tool = build_session_tool(store)
+        context_tool = build_context_tool(store)
+        opened = _open(session_tool)
         session_id = opened["session"]["session_id"]
 
         with patch("rfmcp_core.runtime.context.capability_allowed", return_value=False):
-            denied = set_context(session_id, "${MODE}", "readonly")
+            denied = _ctx_set(context_tool, session_id, "${MODE}", "readonly")
         self.assertFalse(denied["ok"])
         self.assertEqual(denied["error"]["code"], "policy-context-write-disabled")
         self.assertEqual(denied["error"]["provenance"]["kind"], "observed")
@@ -325,7 +346,7 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
         self.assertIn("local policy", denied["error"]["suggested_next_step"])
 
         store.configure_capabilities(session_id, allow_context_write=False)
-        denied_by_session = set_context(session_id, "${MODE}", "readonly")
+        denied_by_session = _ctx_set(context_tool, session_id, "${MODE}", "readonly")
         self.assertFalse(denied_by_session["ok"])
         self.assertEqual(denied_by_session["error"]["code"], "session-context-write-disabled")
         self.assertEqual(denied_by_session["error"]["provenance"]["kind"], "observed")
@@ -334,13 +355,13 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
     def test_approved_inspection_snapshots_and_denials_are_structured(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
+        session_tool = build_session_tool(store)
         inspect_state = build_app_inspect_state_tool(store)
-        opened = open_session("stdio")
+        opened = _open(session_tool)
         session_id = opened["session"]["session_id"]
 
         # app_context is real, always-available live session state (no external app needed).
-        app_ctx = inspect_state(session_id, "app_context")
+        app_ctx = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.APP_CONTEXT)
         self.assertTrue(app_ctx["ok"])
         self.assertEqual(app_ctx["snapshot"]["snapshot_kind"], "app_context")
         self.assertEqual(app_ctx["snapshot"]["provenance"]["kind"], "observed")
@@ -349,26 +370,25 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
         # A default session loads no browser/HTTP library, so these kinds have no live
         # source and must report a structured snapshot-unavailable error (not a fixture).
-        for snapshot_kind in ("dom", "screenshot", "accessibility", "last_api_response"):
-            response = inspect_state(session_id, snapshot_kind)
-            self.assertFalse(response["ok"], snapshot_kind)
-            self.assertEqual(response["error"]["code"], "snapshot-unavailable", snapshot_kind)
-            self.assertEqual(response["error"]["provenance"]["kind"], "observed", snapshot_kind)
+        for snapshot_kind in (
+            SnapshotKind.DOM,
+            SnapshotKind.SCREENSHOT,
+            SnapshotKind.ACCESSIBILITY,
+            SnapshotKind.LAST_API_RESPONSE,
+        ):
+            response = inspect_state(session_id=session_id, snapshot_kind=snapshot_kind)
+            self.assertFalse(response["ok"], snapshot_kind.value)
+            self.assertEqual(response["error"]["code"], "snapshot-unavailable", snapshot_kind.value)
+            self.assertEqual(response["error"]["provenance"]["kind"], "observed", snapshot_kind.value)
 
-        unsupported = inspect_state(session_id, "video")
-        self.assertFalse(unsupported["ok"])
-        self.assertEqual(unsupported["error"]["code"], "unsupported-snapshot-kind")
-        self.assertEqual(unsupported["error"]["provenance"]["source"], "inspection-surface")
-        self.assertIn("approved snapshot kinds", unsupported["error"]["suggested_next_step"])
-
-        missing = inspect_state("missing-session", "dom")
+        missing = inspect_state(session_id="missing-session", snapshot_kind=SnapshotKind.DOM)
         self.assertFalse(missing["ok"])
         self.assertEqual(missing["error"]["code"], "session-not-found")
         self.assertEqual(missing["error"]["provenance"]["source"], "session-store")
         self.assertIn("inspection snapshot", missing["error"]["suggested_next_step"])
 
         store.configure_capabilities(session_id, allowed_snapshot_kinds=(SnapshotKind.DOM,))
-        denied_by_session = inspect_state(session_id, "screenshot")
+        denied_by_session = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.SCREENSHOT)
         self.assertFalse(denied_by_session["ok"])
         self.assertEqual(denied_by_session["error"]["code"], "session-snapshot-disabled")
         self.assertEqual(denied_by_session["error"]["provenance"]["kind"], "observed")
@@ -376,16 +396,15 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
         self.assertIn("allowed snapshot kind", denied_by_session["error"]["suggested_next_step"])
 
         with patch("rfmcp_core.runtime.snapshot.capability_allowed", return_value=False):
-            denied_by_policy = inspect_state(session_id, "dom")
+            denied_by_policy = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.DOM)
         self.assertFalse(denied_by_policy["ok"])
         self.assertEqual(denied_by_policy["error"]["code"], "policy-inspection-disabled")
         self.assertEqual(denied_by_policy["error"]["provenance"]["kind"], "observed")
         self.assertEqual(denied_by_policy["error"]["provenance"]["source"], "local-policy")
         self.assertIn("local policy", denied_by_policy["error"]["suggested_next_step"])
 
-        close_session = build_close_session_tool(store)
-        close_session(session_id)
-        closed = inspect_state(session_id, "dom")
+        _close(session_tool, session_id)
+        closed = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.DOM)
         self.assertFalse(closed["ok"])
         self.assertEqual(closed["error"]["code"], "session-not-open")
         self.assertEqual(closed["error"]["provenance"]["source"], "session-store")
@@ -393,60 +412,59 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
     def test_new_tools_map_policy_load_failures_to_structured_errors(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
-        set_context = build_set_context_tool(store)
+        session_tool = build_session_tool(store)
+        context_tool = build_context_tool(store)
         inspect_state = build_app_inspect_state_tool(store)
-        opened = open_session("stdio")
+        opened = _open(session_tool)
         session_id = opened["session"]["session_id"]
 
         with patch("rfmcp_core.runtime.context.load_local_policy_defaults", side_effect=FileNotFoundError()):
-            context_error = set_context(session_id, "${MODE}", "readonly")
+            context_error = _ctx_set(context_tool, session_id, "${MODE}", "readonly")
         self.assertFalse(context_error["ok"])
         self.assertEqual(context_error["error"]["code"], "policy-load-failed")
         self.assertEqual(context_error["error"]["provenance"]["source"], "local-policy")
 
         with patch("rfmcp_core.runtime.snapshot.load_local_policy_defaults", side_effect=FileNotFoundError()):
-            snapshot_error = inspect_state(session_id, "dom")
+            snapshot_error = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.DOM)
         self.assertFalse(snapshot_error["ok"])
         self.assertEqual(snapshot_error["error"]["code"], "policy-load-failed")
         self.assertEqual(snapshot_error["error"]["provenance"]["source"], "local-policy")
 
     def test_new_tools_trap_unexpected_exceptions_with_shared_error_envelope(self) -> None:
         store = LiveSessionStore()
-        get_context = build_get_context_tool(store)
-        set_context = build_set_context_tool(store)
+        context_tool = build_context_tool(store)
         inspect_state = build_app_inspect_state_tool(store)
 
-        with patch("rfmcp_mcp.tools.rf_get_context.get_runtime_context", side_effect=RuntimeError("boom")):
-            get_error = get_context("session-1")
+        with patch("rfmcp_mcp.tools.rf_context.get_runtime_context", side_effect=RuntimeError("boom")):
+            get_error = _ctx_get(context_tool, "session-1")
         self.assertFalse(get_error["ok"])
         self.assertEqual(get_error["error"]["code"], "tool-execution-failed")
-        self.assertEqual(get_error["error"]["provenance"]["source"], "rf_get_context")
+        self.assertEqual(get_error["error"]["provenance"]["source"], "rf_context")
 
-        with patch("rfmcp_mcp.tools.rf_set_context.set_runtime_context", side_effect=RuntimeError("boom")):
-            set_error = set_context("session-1", "${MODE}", "readonly")
+        with patch("rfmcp_mcp.tools.rf_context.set_runtime_context", side_effect=RuntimeError("boom")):
+            set_error = _ctx_set(context_tool, "session-1", "${MODE}", "readonly")
         self.assertFalse(set_error["ok"])
         self.assertEqual(set_error["error"]["code"], "tool-execution-failed")
-        self.assertEqual(set_error["error"]["provenance"]["source"], "rf_set_context")
+        self.assertEqual(set_error["error"]["provenance"]["source"], "rf_context")
 
         with patch("rfmcp_mcp.tools.app_inspect_state.capture_inspection_snapshot", side_effect=RuntimeError("boom")):
-            snapshot_error = inspect_state("session-1", "dom")
+            snapshot_error = inspect_state(session_id="session-1", snapshot_kind=SnapshotKind.DOM)
         self.assertFalse(snapshot_error["ok"])
         self.assertEqual(snapshot_error["error"]["code"], "tool-execution-failed")
         self.assertEqual(snapshot_error["error"]["provenance"]["source"], "app_inspect_state")
 
     def test_attach_default_denied_by_policy(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
-        denied = open_session("stdio", attach_requested=True)
+        session_tool = build_session_tool(store)
+        denied = _open(session_tool, attach_requested=True)
         self.assertFalse(denied["ok"])
         self.assertEqual(denied["error"]["code"], "policy-attach-disabled")
 
     def test_attach_rejects_non_loopback_host(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
+        session_tool = build_session_tool(store)
         with patch("rfmcp_mcp.security.attach_policy.capability_allowed", return_value=True):
-            denied = open_session("stdio", attach_requested=True, attach_host="10.0.0.5")
+            denied = _open(session_tool, attach_requested=True, attach_host="10.0.0.5")
         self.assertFalse(denied["ok"])
         self.assertEqual(denied["error"]["code"], "policy-attach-loopback-only")
 
@@ -454,14 +472,13 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
         from rfmcp_core.runtime.attach import AttachExecutionContext
 
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
+        session_tool = build_session_tool(store)
         execute_step = build_execute_step_tool(store)
-        get_context = build_get_context_tool(store)
-        set_context = build_set_context_tool(store)
+        context_tool = build_context_tool(store)
         inspect_state = build_app_inspect_state_tool(store)
 
         with patch("rfmcp_mcp.security.attach_policy.capability_allowed", return_value=True):
-            opened = open_session("stdio", attach_requested=True, attach_host="127.0.0.1", attach_port=7317)
+            opened = _open(session_tool, attach_requested=True, attach_host="127.0.0.1", attach_port=7317)
         self.assertTrue(opened["ok"])
         self.assertTrue(opened["session"]["attach_requested"])
         # The ephemeral token is returned so the operator can configure their listener.
@@ -486,9 +503,9 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
         with patch.object(engine, "_post", side_effect=fake_post):
             stepped = execute_step(session_id, "Log    hi")
             self.assertTrue(stepped["ok"])
-            context = get_context(session_id)
-            written = set_context(session_id, "${X}", 5)
-            snapshot = inspect_state(session_id, "app_context")
+            context = _ctx_get(context_tool, session_id)
+            written = _ctx_set(context_tool, session_id, "${X}", 5)
+            snapshot = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.APP_CONTEXT)
 
         # Every surface routed through the bridge transport.
         self.assertIn("run_keyword", calls)
@@ -502,10 +519,10 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
     def test_attach_unreachable_bridge_returns_structured_failure(self) -> None:
         store = LiveSessionStore()
-        open_session = build_open_session_tool(store)
+        session_tool = build_session_tool(store)
         execute_step = build_execute_step_tool(store)
         with patch("rfmcp_mcp.security.attach_policy.capability_allowed", return_value=True):
-            opened = open_session("stdio", attach_requested=True, attach_host="127.0.0.1", attach_port=1)
+            opened = _open(session_tool, attach_requested=True, attach_host="127.0.0.1", attach_port=1)
         session_id = opened["session"]["session_id"]
         stepped = execute_step(session_id, "Log    hi")  # port 1 is closed → unreachable
         self.assertFalse(stepped["ok"])
@@ -517,8 +534,12 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
         self.assertEqual(server.name, "rfmcp-reloaded")
         tools = asyncio.run(server.list_tools())
         self.assertEqual({tool.name for tool in tools}, set(ALLOWLISTED_TOOL_NAMES))
-        rf_set_context = next(tool for tool in tools if tool.name == "rf_set_context")
-        self.assertEqual(rf_set_context.parameters["properties"]["value"], {})
+        rf_context = next(tool for tool in tools if tool.name == "rf_context")
+        # 'value' carries a description for the agent and accepts any JSON-safe value
+        # (no `type` constraint — the schema is unconstrained for the payload).
+        value_schema = rf_context.parameters["properties"]["value"]
+        self.assertIn("description", value_schema)
+        self.assertNotIn("type", value_schema)
 
     def test_http_server_rejects_non_loopback_bind(self) -> None:
         with self.assertRaises(PolicyGateError):
