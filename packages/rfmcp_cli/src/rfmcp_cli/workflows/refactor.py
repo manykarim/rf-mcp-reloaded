@@ -17,6 +17,7 @@ from rfmcp_core.contracts import (
     RefactorRunVerification,
     Severity,
 )
+from rfmcp_core.robot import escape_comment_cells, render_keyword_call_line
 from rfmcp_core.robot.validation import validate_robot_artifact
 
 from rfmcp_cli.workflows.generation import _build_failure_context, _correction_path, _run_robot_execution
@@ -157,8 +158,20 @@ def _set_documentation(lines: list[str], documentation: str) -> tuple[list[str],
     return lines, RefactorChange(kind="documentation", summary="Created settings section with top-level documentation.", before=None, after=documentation)
 
 
+def _normalize_body_line(line: str) -> str:
+    rstripped = line.rstrip()
+    leading = rstripped[: len(rstripped) - len(rstripped.lstrip())]
+    if leading:
+        # Nested (e.g. inside FOR/END) — preserve the inner indentation; only escape cells.
+        return f"    {leading}{escape_comment_cells(rstripped.lstrip())}"
+    canonical = render_keyword_call_line(rstripped)
+    if canonical is not None:
+        return canonical
+    return f"    {escape_comment_cells(rstripped)}"
+
+
 def _normalize_body_lines(lines: list[str]) -> list[str]:
-    return [f"    {line.rstrip()}" for line in lines if line.strip()]
+    return [_normalize_body_line(line) for line in lines if line.strip()]
 
 
 def _build_diff(original_content: str, updated_content: str, target: str) -> str:
@@ -312,7 +325,7 @@ def _apply_refactor(
         for before, after in replace_specs:
             for index, body_line in enumerate(working_body):
                 if body_line.strip() == before:
-                    working_body[index] = f"    {after}"
+                    working_body[index] = _normalize_body_line(after)
                     changes.append(RefactorChange(kind="replace-body-line", summary=f"Replaced body line '{before}'.", before=before, after=after))
                     break
             else:

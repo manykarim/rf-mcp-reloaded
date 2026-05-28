@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.11.7 on linux)" generated="2026-05-27T15:08:22.676100" rpa="false" schemaversion="5">
+<suite id="s1" name="Saucedemo Checkout Authored" source="/home/many/workspace/rfmcp-reloaded/tests/saucedemo/saucedemo_checkout_authored.robot">
+<test id="s1-t1" name="Saucedemo Checkout" line="5">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-05-27T15:08:23.073340" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/browser/traces/temp/e2eb0ac9-e3e0-45b8-8cd3-ced62190fc89"}</msg>
+<msg time="2026-05-27T15:08:23.154436" level="INFO">Starting Browser process /home/many/workspace/rfmcp-reloaded/.venv/lib/python3.11/site-packages/Browser/wrapper/index.js using at 127.0.0.1:36815</msg>
+<msg time="2026-05-27T15:08:25.910476" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/browser/traces/temp/e2eb0ac9-e3e0-45b8-8cd3-ced62190fc89"}</msg>
+<arg>chromium</arg>
+<arg>headless=True</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-05-27T15:08:23.072201" elapsed="2.840487"/>
+</kw>
+<kw name="Set Browser Timeout" owner="Browser">
+<arg>60s</arg>
+<tag>Config</tag>
+<tag>Setter</tag>
+<doc>Sets the timeout used by most input and getter keywords.</doc>
+<status status="PASS" start="2026-05-27T15:08:25.915824" elapsed="0.046566"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-05-27T15:08:25.979843" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  }
+}</msg>
+<msg time="2026-05-27T15:08:26.363300" level="INFO">Successfully created context. </msg>
+<msg time="2026-05-27T15:08:26.369675" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1280, 'height': 720}}</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-05-27T15:08:25.962775" elapsed="0.407164"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-05-27T15:08:27.968259" level="INFO">Successfully initialized new page object and opened url: about:blank</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-05-27T15:08:26.371025" elapsed="1.599708"/>
+</kw>
+<kw name="Go To" owner="Browser">
+<msg time="2026-05-27T15:08:31.068720" level="INFO">Successfully opened URL https://www.saucedemo.com</msg>
+<arg>https://www.saucedemo.com</arg>
+<arg>wait_until=domcontentloaded</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-05-27T15:08:27.971417" elapsed="3.101242"/>
+</kw>
+<kw name="Get Title" owner="Browser">
+<msg time="2026-05-27T15:08:32.598759" level="INFO">Title: 'Swag Labs'</msg>
+<arg>==</arg>
+<arg>Swag Labs</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the title of the current page.</doc>
+<status status="PASS" start="2026-05-27T15:08:31.073990" elapsed="1.527425"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T15:08:32.607151" level="INFO">Fills the text 'standard_user' in the given field.</msg>
+<arg>id=user-name</arg>
+<arg>standard_user</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:32.602328" elapsed="0.715425"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T15:08:33.371687" level="INFO">Fills the text 'secret_sauce' in the given field.</msg>
+<arg>id=password</arg>
+<arg>secret_sauce</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:33.361964" elapsed="0.710928"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T15:08:34.080851" level="INFO">Clicks the element 'id=login-button'.</msg>
+<arg>id=login-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:34.075422" elapsed="1.698505"/>
+</kw>
+<kw name="Get Url" owner="Browser">
+<arg>*=</arg>
+<arg>inventory.html</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the current URL.</doc>
+<status status="PASS" start="2026-05-27T15:08:35.775969" elapsed="0.225132"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T15:08:36.012803" level="INFO">Clicks the element '[data-test="add-to-cart-sauce-labs-backpack"]'.</msg>
+<arg>[data-test="add-to-cart-sauce-labs-backpack"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:36.008943" elapsed="0.888802"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T15:08:36.920520" level="INFO">Clicks the element '[data-test="add-to-cart-sauce-labs-bike-light"]'.</msg>
+<arg>[data-test="add-to-cart-sauce-labs-bike-light"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:36.906525" elapsed="0.895674"/>
+</kw>
+<kw name="Get Text" owner="Browser">
+<msg time="2026-05-27T15:08:39.089977" level="INFO">Text: '2'</msg>
+<arg>.shopping_cart_badge</arg>
+<arg>==</arg>
+<arg>2</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns text attribute of the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:37.804835" elapsed="1.287119"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T15:08:39.096469" level="INFO">Clicks the element '.shopping_cart_link'.</msg>
+<arg>.shopping_cart_link</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:39.092789" elapsed="1.900096"/>
+</kw>
+<kw name="Get Url" owner="Browser">
+<arg>*=</arg>
+<arg>cart.html</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the current URL.</doc>
+<status status="PASS" start="2026-05-27T15:08:40.995220" elapsed="0.025899"/>
+</kw>
+<kw name="Get Element Count" owner="Browser">
+<arg>.cart_item</arg>
+<arg>==</arg>
+<arg>2</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the count of elements found with ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:41.021437" elapsed="0.031211"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T15:08:41.053714" level="INFO">Clicks the element '[data-test="checkout"]'.</msg>
+<arg>[data-test="checkout"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:41.052957" elapsed="0.958659"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T15:08:42.025796" level="INFO">Fills the text 'Many' in the given field.</msg>
+<arg>[data-test="firstName"]</arg>
+<arg>Many</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:42.014614" elapsed="0.291754"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T15:08:42.309346" level="INFO">Fills the text 'Tester' in the given field.</msg>
+<arg>[data-test="lastName"]</arg>
+<arg>Tester</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:42.307524" elapsed="0.093085"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T15:08:42.404172" level="INFO">Fills the text '12345' in the given field.</msg>
+<arg>[data-test="postalCode"]</arg>
+<arg>12345</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:42.400978" elapsed="0.110121"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T15:08:42.514941" level="INFO">Clicks the element '[data-test="continue"]'.</msg>
+<arg>[data-test="continue"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:42.513956" elapsed="1.575668"/>
+</kw>
+<kw name="Get Url" owner="Browser">
+<arg>*=</arg>
+<arg>checkout-step-two.html</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the current URL.</doc>
+<status status="PASS" start="2026-05-27T15:08:44.091052" elapsed="0.115217"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T15:08:44.215191" level="INFO">Clicks the element '[data-test="finish"]'.</msg>
+<arg>[data-test="finish"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:44.208823" elapsed="5.619228"/>
+</kw>
+<kw name="Get Url" owner="Browser">
+<arg>*=</arg>
+<arg>checkout-complete.html</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the current URL.</doc>
+<status status="PASS" start="2026-05-27T15:08:49.838747" elapsed="0.233121"/>
+</kw>
+<kw name="Get Text" owner="Browser">
+<msg time="2026-05-27T15:08:55.036316" level="INFO">Text: 'Thank you for your order!'</msg>
+<arg>.complete-header</arg>
+<arg>==</arg>
+<arg>Thank you for your order!</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns text attribute of the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:08:50.073640" elapsed="4.966678"/>
+</kw>
+<kw name="Close Browser" owner="Browser">
+<msg time="2026-05-27T15:08:56.646644" level="INFO">Closed browser</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-05-27T15:08:55.043885" elapsed="1.603897"/>
+</kw>
+<status status="PASS" start="2026-05-27T15:08:23.068645" elapsed="33.579904"/>
+</test>
+<status status="PASS" start="2026-05-27T15:08:22.678188" elapsed="34.029026"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Saucedemo Checkout Authored" id="s1" pass="1" fail="0" skip="0">Saucedemo Checkout Authored</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

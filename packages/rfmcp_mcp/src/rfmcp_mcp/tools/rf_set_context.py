@@ -4,11 +4,11 @@ from typing import Any
 
 from rfmcp_core.contracts import ErrorEnvelope
 from rfmcp_core.runtime.context import set_runtime_context
-from rfmcp_core.runtime.session import LiveRepairSessionStore
+from rfmcp_core.runtime.session import LiveSessionStore
 from rfmcp_mcp.tools._errors import unexpected_tool_error
 
 
-def build_set_context_tool(store: LiveRepairSessionStore):
+def build_set_context_tool(store: LiveSessionStore):
     def rf_set_context(session_id: str, key: str, value: Any) -> dict:
         try:
             result = set_runtime_context(store, session_id, key, value)

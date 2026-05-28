@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.11.7 on linux)" generated="2026-05-27T15:09:05.395014" rpa="false" schemaversion="5">
+<suite id="s1" name="Saucedemo Locked Out Login Authored" source="/home/many/workspace/rfmcp-reloaded/tests/saucedemo/saucedemo_locked_out_login_authored.robot">
+<test id="s1-t1" name="Saucedemo Locked Out Login" line="5">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-05-27T15:09:05.888288" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/browser/traces/temp/f04d1728-eed5-46a7-a869-4600660a6380"}</msg>
+<msg time="2026-05-27T15:09:05.961756" level="INFO">Starting Browser process /home/many/workspace/rfmcp-reloaded/.venv/lib/python3.11/site-packages/Browser/wrapper/index.js using at 127.0.0.1:46343</msg>
+<msg time="2026-05-27T15:09:13.948774" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/browser/traces/temp/f04d1728-eed5-46a7-a869-4600660a6380"}</msg>
+<arg>chromium</arg>
+<arg>headless=True</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-05-27T15:09:05.886006" elapsed="8.099014"/>
+</kw>
+<kw name="Set Browser Timeout" owner="Browser">
+<arg>60s</arg>
+<tag>Config</tag>
+<tag>Setter</tag>
+<doc>Sets the timeout used by most input and getter keywords.</doc>
+<status status="PASS" start="2026-05-27T15:09:13.992491" elapsed="0.816106"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-05-27T15:09:14.885540" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  }
+}</msg>
+<msg time="2026-05-27T15:09:16.721961" level="INFO">Successfully created context. </msg>
+<msg time="2026-05-27T15:09:16.770623" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1280, 'height': 720}}</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-05-27T15:09:14.828005" elapsed="1.942964"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-05-27T15:09:31.741075" level="INFO">Successfully initialized new page object and opened url: about:blank</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-05-27T15:09:16.772917" elapsed="15.001594"/>
+</kw>
+<kw name="Go To" owner="Browser">
+<msg time="2026-05-27T15:10:08.899784" level="INFO">Successfully opened URL https://www.saucedemo.com</msg>
+<arg>https://www.saucedemo.com</arg>
+<arg>wait_until=domcontentloaded</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-05-27T15:09:31.778242" elapsed="37.125966"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T15:10:08.946644" level="INFO">Fills the text 'locked_out_user' in the given field.</msg>
+<arg>id=user-name</arg>
+<arg>locked_out_user</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:10:08.906827" elapsed="37.995514"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T15:10:46.938466" level="INFO">Fills the text 'secret_sauce' in the given field.</msg>
+<arg>id=password</arg>
+<arg>secret_sauce</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T15:10:46.910904" elapsed="12.898733"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T15:10:59.850509" level="INFO">Clicks the element 'id=login-button'.</msg>
+<msg time="2026-05-27T15:12:34.628494" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="browser/screenshot/fail-screenshot-1.png" target="_blank"&gt;&lt;img src="browser/screenshot/fail-screenshot-1.png" width="800px"/&gt;&lt;/a&gt;</msg>
+<msg time="2026-05-27T15:12:34.702817" level="INFO">See also file:///home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/playwright-log.txt for additional details.</msg>
+<msg time="2026-05-27T15:12:36.196725" level="FAIL">TimeoutError: locator.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('id=login-button')
+    - locator resolved to &lt;input type="submit" value="Login" id="login-button" name="login-button" data-test="login-button" class="submit-button btn_action"/&gt;
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+</msg>
+<arg>id=login-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="FAIL" start="2026-05-27T15:10:59.837223" elapsed="97.994121">TimeoutError: locator.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('id=login-button')
+    - locator resolved to &lt;input type="submit" value="Login" id="login-button" name="login-button" data-test="login-button" class="submit-button btn_action"/&gt;
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+</status>
+</kw>
+<kw name="Get Text" owner="Browser">
+<arg>[data-test="error"]</arg>
+<arg>*=</arg>
+<arg>locked out</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns text attribute of the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-05-27T15:12:38.211879" elapsed="0.192126"/>
+</kw>
+<kw name="Get Url" owner="Browser">
+<arg>==</arg>
+<arg>https://www.saucedemo.com/</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the current URL.</doc>
+<status status="NOT RUN" start="2026-05-27T15:12:38.775046" elapsed="0.090414"/>
+</kw>
+<kw name="Close Browser" owner="Browser">
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" start="2026-05-27T15:12:38.874526" elapsed="0.000282"/>
+</kw>
+<msg time="2026-05-27T15:12:50.760666" level="INFO">Switching context to context=ec5aad1e-84db-4b33-b25e-25901a9dbeb6 in CURRENT</msg>
+<msg time="2026-05-27T15:12:52.954613" level="INFO">Successfully changed active context: context=ec5aad1e-84db-4b33-b25e-25901a9dbeb6</msg>
+<msg time="2026-05-27T15:12:56.133937" level="INFO">Successfully closed Context</msg>
+<status status="FAIL" start="2026-05-27T15:09:05.883771" elapsed="212.997920">TimeoutError: locator.click: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('id=login-button')
+    - locator resolved to &lt;input type="submit" value="Login" id="login-button" name="login-button" data-test="login-button" class="submit-button btn_action"/&gt;
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+</status>
+</test>
+<status status="FAIL" start="2026-05-27T15:09:05.397316" elapsed="230.785998"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Saucedemo Locked Out Login Authored" id="s1" pass="0" fail="1" skip="0">Saucedemo Locked Out Login Authored</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

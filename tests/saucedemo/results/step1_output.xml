@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.11.7 on linux)" generated="2026-05-27T10:21:15.156768" rpa="false" schemaversion="5">
+<suite id="s1" name="Step1 Setup Open Browser And Navigat" source="/home/many/workspace/rfmcp-reloaded/tests/saucedemo/steps/step1_setup_open_browser_and_navigat.robot">
+<test id="s1-t1" name="Step 1 - Setup Open Browser And Navigate" line="6">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-05-27T10:21:15.381734" level="INFO">{"browser": "chromium", "headless": false, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/browser/traces/temp/cb218b68-8af0-4f6c-9f00-2bc6af30c063"}</msg>
+<msg time="2026-05-27T10:21:15.391413" level="INFO">Starting Browser process /home/many/workspace/rfmcp-reloaded/.venv/lib/python3.11/site-packages/Browser/wrapper/index.js using at 127.0.0.1:36089</msg>
+<msg time="2026-05-27T10:21:17.440750" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":false,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/browser/traces/temp/cb218b68-8af0-4f6c-9f00-2bc6af30c063"}</msg>
+<arg>chromium</arg>
+<arg>headless=False</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-05-27T10:21:15.380411" elapsed="2.060621"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-05-27T10:21:17.443302" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  }
+}</msg>
+<msg time="2026-05-27T10:21:17.518267" level="INFO">Successfully created context. </msg>
+<msg time="2026-05-27T10:21:17.518402" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1280, 'height': 720}}</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-05-27T10:21:17.441394" elapsed="0.077153"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-05-27T10:21:18.922762" level="INFO">Successfully initialized new page object and opened url: https://www.saucedemo.com</msg>
+<arg>https://www.saucedemo.com</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-05-27T10:21:17.518941" elapsed="1.404171"/>
+</kw>
+<kw name="Get Title" owner="Browser">
+<msg time="2026-05-27T10:21:18.945219" level="INFO">Title: 'Swag Labs'</msg>
+<arg>==</arg>
+<arg>Swag Labs</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the title of the current page.</doc>
+<status status="PASS" start="2026-05-27T10:21:18.923497" elapsed="0.022003"/>
+</kw>
+<msg time="2026-05-27T10:21:18.971384" level="INFO">Switching context to context=9c27e271-3223-4077-93e5-cd5fdf20a372 in CURRENT</msg>
+<msg time="2026-05-27T10:21:18.981647" level="INFO">Successfully changed active context: context=9c27e271-3223-4077-93e5-cd5fdf20a372</msg>
+<msg time="2026-05-27T10:21:19.005434" level="INFO">Successfully closed Context</msg>
+<status status="PASS" start="2026-05-27T10:21:15.378898" elapsed="3.567079"/>
+</test>
+<kw name="Close Browser" owner="Browser" type="TEARDOWN">
+<msg time="2026-05-27T10:21:19.370035" level="INFO">Closed browser</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-05-27T10:21:19.007073" elapsed="0.363257"/>
+</kw>
+<status status="PASS" start="2026-05-27T10:21:15.157890" elapsed="4.212622"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Step1 Setup Open Browser And Navigat" id="s1" pass="1" fail="0" skip="0">Step1 Setup Open Browser And Navigat</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

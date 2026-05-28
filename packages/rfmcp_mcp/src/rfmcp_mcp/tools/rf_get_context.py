@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from rfmcp_core.contracts import ErrorEnvelope
 from rfmcp_core.runtime.context import get_runtime_context
-from rfmcp_core.runtime.session import LiveRepairSessionStore
+from rfmcp_core.runtime.session import LiveSessionStore
 from rfmcp_mcp.tools._errors import unexpected_tool_error
 
 
-def build_get_context_tool(store: LiveRepairSessionStore):
+def build_get_context_tool(store: LiveSessionStore):
     def rf_get_context(session_id: str, keys: list[str] | None = None) -> dict:
         try:
             result = get_runtime_context(store, session_id, keys)

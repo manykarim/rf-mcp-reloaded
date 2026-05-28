@@ -100,8 +100,10 @@ The Human Operator can direct an Agent Host to inspect runtime state and step th
 **Consequences (testable):**
 - A failing test repair workflow can inspect relevant runtime state without forcing the user to restart the context on every step.
 - The repair flow can return enough structured information for the Human Operator to understand and validate the proposed fix.
-- The first MCP Core release supports stepwise execution plus retrieval of application state such as DOM, accessibility snapshots, screenshots, last API response, and current open app context where applicable.
-- The first MCP Core release supports getting and setting Robot Framework runtime context including variables, libraries, and keyword-relevant state needed for repair workflows.
+- The MCP Core executes stepwise repair actions as real Robot Framework keywords against a persistent live execution context; a step that would fail under `robot` (e.g. a false assertion) returns a real failure, never a recorded no-op.
+- Live execution state — variables, imports, and library instances — persists across steps within a session so later steps observe the effects of earlier ones.
+- The MCP Core retrieves real application state (DOM, accessibility snapshots, screenshots, last API response, current open app context) captured from the actual loaded library instances where applicable, not synthetic placeholders.
+- The MCP Core gets and sets real Robot Framework runtime context (variables, libraries, keyword-relevant state) in the live namespace used for repair workflows.
 
 #### FR-3: Live-state usage is clearly bounded and documented
 

@@ -117,25 +117,6 @@ class GenerationWorkflowTests(unittest.TestCase):
         self.assertFalse(result.ok)
         self.assertEqual(result.error.code, "unsupported-extension")
 
-    def test_generate_reports_injection_failure_when_placeholder_is_missing(self) -> None:
-        scaffold_result = ScaffoldResult(
-            ok=True,
-            artifact=ScaffoldArtifact(
-                path="broken.robot",
-                kind="suite",
-                content="*** Test Cases ***\nGenerated Test\n    Log    hello\n",
-                validation=ValidationResult(ok=True, target="broken.robot"),
-            ),
-            preventive_guidance=[],
-            created=True,
-            overwritten=False,
-        )
-        with patch("rfmcp_cli.workflows.generation.scaffold_suite", return_value=scaffold_result):
-            result = generate_suite_artifact("broken.robot", steps=["Log    hello"])
-
-        self.assertFalse(result.ok)
-        self.assertEqual(result.error.code, "generation-injection-failed")
-
     def test_scaffold_result_rejects_created_and_overwritten_together(self) -> None:
         with self.assertRaises(ValueError):
             ScaffoldResult(

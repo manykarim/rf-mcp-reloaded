@@ -1,0 +1,63 @@
+Session closed. Here is the final report:
+
+---
+
+## ✅ SUMMARY
+
+### Live Session (`session-e9db65de7632`)
+
+| | |
+|---|---|
+| **Total live steps executed** | **17** |
+| **Steps that failed and were corrected** | **2** |
+
+#### Failures corrected during live authoring
+
+1. **Step 15 — `button[type="submit"].button--lg`**  
+   *Issue:* Playwright strict-mode violation — selector matched both the "Place order" button and a hidden "Sign in" modal button.  
+   *Fix:* Narrowed to `.checkout-form button[type="submit"]`, which scopes to the visible checkout form.
+
+2. **Suite parse issue — `Fill Text    #checkout-email/name/address    …`**  
+   *Issue:* Robot Framework parses `#` at the start of a data cell as a **comment token**, causing `Fill Text` to receive 0 arguments.  
+   *Fix:* Escaped all three CSS ID selectors with `\#` (e.g., `\#checkout-email`).
+
+### Final suite
+
+**Path:** `tests/demoshop/demoshop_checkout_authored.robot`
+
+```robot
+*** Settings ***
+Library    Browser
+
+*** Test Cases ***
+Flowline Supply — Add Two Items And Checkout
+    New Browser    chromium    headless=True
+    Set Browser Timeout    60s
+    New Context
+    New Page
+    Go To    https://demoshop.makrocode.de/    wait_until=domcontentloaded
+
+    # Add first item: Cascade Water Bottle (featured non-compact card)
+    Click    article:not(.product-card--compact)[data-product-id="12"] button[data-test="add-to-cart-btn"]
+    Get Text    [data-cart-count]    ==    1
+
+    # Add second item: Echo Conference Speaker (unique in featured section)
+    Click    [aria-label="Add Echo Conference Speaker to cart"]
+    Get Text    [data-cart-count]    ==    2
+
+    # Checkout
+    Go To    https://demoshop.makrocode.de/checkout    wait_until=domcontentloaded
+    Fill Text    \#checkout-email    test@example.com
+    Fill Text    \#checkout-name    Test User
+    Fill Text    \#checkout-address    123 Flow Street, San Francisco, CA
+    Click    .checkout-form button[type="submit"]
+
+    # Assert checkout success
+    Get Element Count    .checkout-alert--success    ==    1
+```
+
+### Standalone `robot` run
+
+```
+1 test, 1 passed, 0 failed  ✅  PASS
+```

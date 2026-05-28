@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.11.7 on linux)" generated="2026-05-27T20:56:47.705246" rpa="false" schemaversion="5">
+<suite id="s1" name="Demoshop Checkout Authored" source="/home/many/workspace/rfmcp-reloaded/tests/demoshop/demoshop_checkout_authored.robot">
+<test id="s1-t1" name="Flowline Supply — Add Two Items And Checkout" line="5">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-05-27T20:56:47.933880" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/home/many/workspace/rfmcp-reloaded/tests/demoshop/results/browser/traces/temp/6bee59bc-f597-437f-a1b1-96a56aebc01c"}</msg>
+<msg time="2026-05-27T20:56:47.946606" level="INFO">Starting Browser process /home/many/workspace/rfmcp-reloaded/.venv/lib/python3.11/site-packages/Browser/wrapper/index.js using at 127.0.0.1:43441</msg>
+<msg time="2026-05-27T20:56:48.848463" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/home/many/workspace/rfmcp-reloaded/tests/demoshop/results/browser/traces/temp/6bee59bc-f597-437f-a1b1-96a56aebc01c"}</msg>
+<arg>chromium</arg>
+<arg>headless=True</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-05-27T20:56:47.932821" elapsed="0.916046"/>
+</kw>
+<kw name="Set Browser Timeout" owner="Browser">
+<arg>60s</arg>
+<tag>Config</tag>
+<tag>Setter</tag>
+<doc>Sets the timeout used by most input and getter keywords.</doc>
+<status status="PASS" start="2026-05-27T20:56:48.849270" elapsed="0.007784"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-05-27T20:56:48.859865" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  }
+}</msg>
+<msg time="2026-05-27T20:56:48.881268" level="INFO">Successfully created context. </msg>
+<msg time="2026-05-27T20:56:48.881385" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1280, 'height': 720}}</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-05-27T20:56:48.857594" elapsed="0.023915"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-05-27T20:56:48.952251" level="INFO">Successfully initialized new page object and opened url: about:blank</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-05-27T20:56:48.881795" elapsed="0.070823"/>
+</kw>
+<kw name="Go To" owner="Browser">
+<msg time="2026-05-27T20:56:49.262592" level="INFO">Successfully opened URL https://demoshop.makrocode.de/</msg>
+<arg>https://demoshop.makrocode.de/</arg>
+<arg>wait_until=domcontentloaded</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-05-27T20:56:48.952934" elapsed="0.309957"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T20:56:49.264202" level="INFO">Clicks the element 'article:not(.product-card--compact)[data-product-id="12"] button[data-test="add-to-cart-btn"]'.</msg>
+<arg>article:not(.product-card--compact)[data-product-id="12"] button[data-test="add-to-cart-btn"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.263253" elapsed="0.146143"/>
+</kw>
+<kw name="Get Text" owner="Browser">
+<msg time="2026-05-27T20:56:49.511266" level="INFO">Text: '1'</msg>
+<arg>[data-cart-count]</arg>
+<arg>==</arg>
+<arg>1</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns text attribute of the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.409758" elapsed="0.101726"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T20:56:49.512970" level="INFO">Clicks the element '[aria-label="Add Echo Conference Speaker to cart"]'.</msg>
+<arg>[aria-label="Add Echo Conference Speaker to cart"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.511918" elapsed="0.049466"/>
+</kw>
+<kw name="Get Text" owner="Browser">
+<msg time="2026-05-27T20:56:49.674596" level="INFO">Text: '2'</msg>
+<arg>[data-cart-count]</arg>
+<arg>==</arg>
+<arg>2</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns text attribute of the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.561799" elapsed="0.112958"/>
+</kw>
+<kw name="Go To" owner="Browser">
+<msg time="2026-05-27T20:56:49.764428" level="INFO">Successfully opened URL https://demoshop.makrocode.de/checkout</msg>
+<arg>https://demoshop.makrocode.de/checkout</arg>
+<arg>wait_until=domcontentloaded</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.675003" elapsed="0.089791"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T20:56:49.766154" level="INFO">Fills the text 'test@example.com' in the given field.</msg>
+<arg>\#checkout-email</arg>
+<arg>test@example.com</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.765169" elapsed="0.036652"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T20:56:49.802810" level="INFO">Fills the text 'Test User' in the given field.</msg>
+<arg>\#checkout-name</arg>
+<arg>Test User</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.802108" elapsed="0.014183"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<msg time="2026-05-27T20:56:49.817299" level="INFO">Fills the text '123 Flow Street, San Francisco, CA' in the given field.</msg>
+<arg>\#checkout-address</arg>
+<arg>123 Flow Street, San Francisco, CA</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.816612" elapsed="0.013503"/>
+</kw>
+<kw name="Click" owner="Browser">
+<msg time="2026-05-27T20:56:49.831336" level="INFO">Clicks the element '.checkout-form button[type="submit"]'.</msg>
+<arg>.checkout-form button[type="submit"]</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:49.830448" elapsed="1.225780"/>
+</kw>
+<kw name="Get Element Count" owner="Browser">
+<arg>.checkout-alert--success</arg>
+<arg>==</arg>
+<arg>1</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the count of elements found with ``selector``.</doc>
+<status status="PASS" start="2026-05-27T20:56:51.056759" elapsed="0.040506"/>
+</kw>
+<msg time="2026-05-27T20:56:51.115588" level="INFO">Switching context to context=446f8652-6596-49a3-af1a-250b42da81ff in CURRENT</msg>
+<msg time="2026-05-27T20:56:51.127154" level="INFO">Successfully changed active context: context=446f8652-6596-49a3-af1a-250b42da81ff</msg>
+<msg time="2026-05-27T20:56:51.138889" level="INFO">Successfully closed Context</msg>
+<status status="PASS" start="2026-05-27T20:56:47.931297" elapsed="3.166251"/>
+</test>
+<status status="PASS" start="2026-05-27T20:56:47.707010" elapsed="3.432747"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Demoshop Checkout Authored" id="s1" pass="1" fail="0" skip="0">Demoshop Checkout Authored</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

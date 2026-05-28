@@ -1,0 +1,415 @@
+{
+  "url": "https://www.saucedemo.com",
+  "executed_at": "2026-05-27T13:12:59.834334+00:00",
+  "surface": "mcp-live-session",
+  "engine": "in-process Browser (Playwright)",
+  "scenarios": [
+    {
+      "scenario": "checkout",
+      "total_steps": 27,
+      "executed_steps": 27,
+      "passed_steps": 27,
+      "failed_steps": 0,
+      "scenario_passed": true,
+      "tool_calls": 30,
+      "failed_tool_calls": 0,
+      "failed_tool_call_rate": 0.0,
+      "total_step_seconds": 6.12,
+      "recorded_session_steps": 27,
+      "final_suite": "tests/saucedemo/saucedemo_checkout_authored.robot",
+      "final_suite_runnable": true,
+      "final_suite_run": {
+        "ok": true,
+        "return_code": 0,
+        "elapsed_seconds": 35.37,
+        "command": [
+          "python",
+          "-m",
+          "robot",
+          "/home/many/workspace/rfmcp-reloaded/tests/saucedemo/saucedemo_checkout_authored.robot"
+        ],
+        "output_excerpt": "==============================================================================\nSaucedemo Checkout Authored                                                   \n==============================================================================\nSaucedemo Checkout                                                    | PASS |\n------------------------------------------------------------------------------\nSaucedemo Checkout Authored                                           | PASS |\n1 test, 1 passed, 0 failed\n==============================================================================\nOutput:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/checkout_output.xml\nLog:     /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/checkout_log.html\nReport:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/checkout_report.html\n"
+      },
+      "issues": [],
+      "steps": [
+        {
+          "index": 1,
+          "intent": "Open the web site",
+          "instruction": "Import Library    Browser",
+          "ok": true,
+          "elapsed_seconds": 0.778,
+          "detail": "Executed keyword 'Import Library' in the live session."
+        },
+        {
+          "index": 2,
+          "intent": "Open the web site",
+          "instruction": "New Browser    chromium    headless=True",
+          "ok": true,
+          "elapsed_seconds": 1.864,
+          "detail": "Executed keyword 'New Browser' in the live session."
+        },
+        {
+          "index": 3,
+          "intent": "Open the web site",
+          "instruction": "Set Browser Timeout    60s",
+          "ok": true,
+          "elapsed_seconds": 0.02,
+          "detail": "Executed keyword 'Set Browser Timeout' in the live session."
+        },
+        {
+          "index": 4,
+          "intent": "Open the web site",
+          "instruction": "New Context",
+          "ok": true,
+          "elapsed_seconds": 0.068,
+          "detail": "Executed keyword 'New Context' in the live session."
+        },
+        {
+          "index": 5,
+          "intent": "Open the web site",
+          "instruction": "New Page",
+          "ok": true,
+          "elapsed_seconds": 0.441,
+          "detail": "Executed keyword 'New Page' in the live session."
+        },
+        {
+          "index": 6,
+          "intent": "Open the web site",
+          "instruction": "Go To    https://www.saucedemo.com    wait_until=domcontentloaded",
+          "ok": true,
+          "elapsed_seconds": 0.995,
+          "detail": "Executed keyword 'Go To' in the live session."
+        },
+        {
+          "index": 7,
+          "intent": "Open the web site",
+          "instruction": "Get Title    ==    Swag Labs",
+          "ok": true,
+          "elapsed_seconds": 0.194,
+          "detail": "Executed keyword 'Get Title' in the live session."
+        },
+        {
+          "index": 8,
+          "intent": "Log in with valid credentials",
+          "instruction": "Fill Text    id=user-name    standard_user",
+          "ok": true,
+          "elapsed_seconds": 0.148,
+          "detail": "Executed keyword 'Fill Text' in the live session."
+        },
+        {
+          "index": 9,
+          "intent": "Log in with valid credentials",
+          "instruction": "Fill Text    id=password    secret_sauce",
+          "ok": true,
+          "elapsed_seconds": 0.034,
+          "detail": "Executed keyword 'Fill Text' in the live session."
+        },
+        {
+          "index": 10,
+          "intent": "Log in with valid credentials",
+          "instruction": "Click    id=login-button",
+          "ok": true,
+          "elapsed_seconds": 0.228,
+          "detail": "Executed keyword 'Click' in the live session."
+        },
+        {
+          "index": 11,
+          "intent": "Log in with valid credentials",
+          "instruction": "Get Url    *=    inventory.html",
+          "ok": true,
+          "elapsed_seconds": 0.009,
+          "detail": "Executed keyword 'Get Url' in the live session."
+        },
+        {
+          "index": 12,
+          "intent": "Add two items to cart",
+          "instruction": "Click    [data-test=\"add-to-cart-sauce-labs-backpack\"]",
+          "ok": true,
+          "elapsed_seconds": 0.237,
+          "detail": "Executed keyword 'Click' in the live session."
+        },
+        {
+          "index": 13,
+          "intent": "Add two items to cart",
+          "instruction": "Click    [data-test=\"add-to-cart-sauce-labs-bike-light\"]",
+          "ok": true,
+          "elapsed_seconds": 0.081,
+          "detail": "Executed keyword 'Click' in the live session."
+        },
+        {
+          "index": 14,
+          "intent": "Assert items were added to cart",
+          "instruction": "Get Text    .shopping_cart_badge    ==    2",
+          "ok": true,
+          "elapsed_seconds": 0.11,
+          "detail": "Executed keyword 'Get Text' in the live session."
+        },
+        {
+          "index": 15,
+          "intent": "Assert items were added to cart",
+          "instruction": "Click    .shopping_cart_link",
+          "ok": true,
+          "elapsed_seconds": 0.324,
+          "detail": "Executed keyword 'Click' in the live session."
+        },
+        {
+          "index": 16,
+          "intent": "Assert items were added to cart",
+          "instruction": "Get Url    *=    cart.html",
+          "ok": true,
+          "elapsed_seconds": 0.01,
+          "detail": "Executed keyword 'Get Url' in the live session."
+        },
+        {
+          "index": 17,
+          "intent": "Assert items were added to cart",
+          "instruction": "Get Element Count    .cart_item    ==    2",
+          "ok": true,
+          "elapsed_seconds": 0.014,
+          "detail": "Executed keyword 'Get Element Count' in the live session."
+        },
+        {
+          "index": 18,
+          "intent": "Perform checkout",
+          "instruction": "Click    [data-test=\"checkout\"]",
+          "ok": true,
+          "elapsed_seconds": 0.092,
+          "detail": "Executed keyword 'Click' in the live session."
+        },
+        {
+          "index": 19,
+          "intent": "Perform checkout",
+          "instruction": "Fill Text    [data-test=\"firstName\"]    Many",
+          "ok": true,
+          "elapsed_seconds": 0.041,
+          "detail": "Executed keyword 'Fill Text' in the live session."
+        },
+        {
+          "index": 20,
+          "intent": "Perform checkout",
+          "instruction": "Fill Text    [data-test=\"lastName\"]    Tester",
+          "ok": true,
+          "elapsed_seconds": 0.025,
+          "detail": "Executed keyword 'Fill Text' in the live session."
+        },
+        {
+          "index": 21,
+          "intent": "Perform checkout",
+          "instruction": "Fill Text    [data-test=\"postalCode\"]    12345",
+          "ok": true,
+          "elapsed_seconds": 0.025,
+          "detail": "Executed keyword 'Fill Text' in the live session."
+        },
+        {
+          "index": 22,
+          "intent": "Perform checkout",
+          "instruction": "Click    [data-test=\"continue\"]",
+          "ok": true,
+          "elapsed_seconds": 0.089,
+          "detail": "Executed keyword 'Click' in the live session."
+        },
+        {
+          "index": 23,
+          "intent": "Perform checkout",
+          "instruction": "Get Url    *=    checkout-step-two.html",
+          "ok": true,
+          "elapsed_seconds": 0.005,
+          "detail": "Executed keyword 'Get Url' in the live session."
+        },
+        {
+          "index": 24,
+          "intent": "Perform checkout",
+          "instruction": "Click    [data-test=\"finish\"]",
+          "ok": true,
+          "elapsed_seconds": 0.126,
+          "detail": "Executed keyword 'Click' in the live session."
+        },
+        {
+          "index": 25,
+          "intent": "Assert checkout is complete",
+          "instruction": "Get Url    *=    checkout-complete.html",
+          "ok": true,
+          "elapsed_seconds": 0.005,
+          "detail": "Executed keyword 'Get Url' in the live session."
+        },
+        {
+          "index": 26,
+          "intent": "Assert checkout is complete",
+          "instruction": "Get Text    .complete-header    ==    Thank you for your order!",
+          "ok": true,
+          "elapsed_seconds": 0.034,
+          "detail": "Executed keyword 'Get Text' in the live session."
+        },
+        {
+          "index": 27,
+          "intent": "Close browser",
+          "instruction": "Close Browser",
+          "ok": true,
+          "elapsed_seconds": 0.124,
+          "detail": "Executed keyword 'Close Browser' in the live session."
+        }
+      ],
+      "session_state": {
+        "session_id": "session-17cfd74330ea",
+        "status": "open",
+        "transport": "stdio",
+        "created_at": "2026-05-27T13:08:15.615539Z",
+        "step_count": 27,
+        "attach_requested": false,
+        "http_host": null,
+        "attach_host": null,
+        "attach_port": null,
+        "attach_token": null,
+        "last_error": null
+      }
+    },
+    {
+      "scenario": "locked-out-login",
+      "total_steps": 12,
+      "executed_steps": 12,
+      "passed_steps": 12,
+      "failed_steps": 0,
+      "scenario_passed": true,
+      "tool_calls": 15,
+      "failed_tool_calls": 0,
+      "failed_tool_call_rate": 0.0,
+      "total_step_seconds": 6.99,
+      "recorded_session_steps": 12,
+      "final_suite": "tests/saucedemo/saucedemo_locked_out_login_authored.robot",
+      "final_suite_runnable": false,
+      "final_suite_run": {
+        "ok": false,
+        "return_code": 1,
+        "elapsed_seconds": 235.7,
+        "command": [
+          "python",
+          "-m",
+          "robot",
+          "/home/many/workspace/rfmcp-reloaded/tests/saucedemo/saucedemo_locked_out_login_authored.robot"
+        ],
+        "output_excerpt": "==============================================================================\nSaucedemo Locked Out Login Authored                                           \n==============================================================================\nSaucedemo Locked Out Login                                            | FAIL |\nTimeoutError: locator.click: Timeout 60000ms exceeded.\nCall log:\n  - waiting for locator('id=login-button')\n    - locator resolved to <input type=\"submit\" value=\"Login\" id=\"login-button\" name=\"login-button\" data-test=\"login-button\" class=\"submit-button btn_action\"/>\n  - attempting click action\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - performing click action\n------------------------------------------------------------------------------\nSaucedemo Locked Out Login Authored                                   | FAIL |\n1 test, 0 passed, 1 failed\n==============================================================================\nOutput:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/locked-out-login_output.xml\nLog:     /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/locked-out-login_log.html\nReport:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/locked-out-login_report.html\n"
+      },
+      "issues": [],
+      "steps": [
+        {
+          "index": 1,
+          "intent": "Open the web site",
+          "instruction": "Import Library    Browser",
+          "ok": true,
+          "elapsed_seconds": 0.008,
+          "detail": "Executed keyword 'Import Library' in the live session."
+        },
+        {
+          "index": 2,
+          "intent": "Open the web site",
+          "instruction": "New Browser    chromium    headless=True",
+          "ok": true,
+          "elapsed_seconds": 1.003,
+          "detail": "Executed keyword 'New Browser' in the live session."
+        },
+        {
+          "index": 3,
+          "intent": "Open the web site",
+          "instruction": "Set Browser Timeout    60s",
+          "ok": true,
+          "elapsed_seconds": 0.004,
+          "detail": "Executed keyword 'Set Browser Timeout' in the live session."
+        },
+        {
+          "index": 4,
+          "intent": "Open the web site",
+          "instruction": "New Context",
+          "ok": true,
+          "elapsed_seconds": 0.125,
+          "detail": "Executed keyword 'New Context' in the live session."
+        },
+        {
+          "index": 5,
+          "intent": "Open the web site",
+          "instruction": "New Page",
+          "ok": true,
+          "elapsed_seconds": 1.537,
+          "detail": "Executed keyword 'New Page' in the live session."
+        },
+        {
+          "index": 6,
+          "intent": "Open the web site",
+          "instruction": "Go To    https://www.saucedemo.com    wait_until=domcontentloaded",
+          "ok": true,
+          "elapsed_seconds": 1.909,
+          "detail": "Executed keyword 'Go To' in the live session."
+        },
+        {
+          "index": 7,
+          "intent": "Log in with a locked-out user",
+          "instruction": "Fill Text    id=user-name    locked_out_user",
+          "ok": true,
+          "elapsed_seconds": 0.336,
+          "detail": "Executed keyword 'Fill Text' in the live session."
+        },
+        {
+          "index": 8,
+          "intent": "Log in with a locked-out user",
+          "instruction": "Fill Text    id=password    secret_sauce",
+          "ok": true,
+          "elapsed_seconds": 0.059,
+          "detail": "Executed keyword 'Fill Text' in the live session."
+        },
+        {
+          "index": 9,
+          "intent": "Log in with a locked-out user",
+          "instruction": "Click    id=login-button",
+          "ok": true,
+          "elapsed_seconds": 0.566,
+          "detail": "Executed keyword 'Click' in the live session."
+        },
+        {
+          "index": 10,
+          "intent": "Assert login is rejected",
+          "instruction": "Get Text    [data-test=\"error\"]    *=    locked out",
+          "ok": true,
+          "elapsed_seconds": 0.91,
+          "detail": "Executed keyword 'Get Text' in the live session."
+        },
+        {
+          "index": 11,
+          "intent": "Assert user stays on login page",
+          "instruction": "Get Url    ==    https://www.saucedemo.com/",
+          "ok": true,
+          "elapsed_seconds": 0.065,
+          "detail": "Executed keyword 'Get Url' in the live session."
+        },
+        {
+          "index": 12,
+          "intent": "Close browser",
+          "instruction": "Close Browser",
+          "ok": true,
+          "elapsed_seconds": 0.464,
+          "detail": "Executed keyword 'Close Browser' in the live session."
+        }
+      ],
+      "session_state": {
+        "session_id": "session-e3df212747df",
+        "status": "open",
+        "transport": "stdio",
+        "created_at": "2026-05-27T13:08:57.134220Z",
+        "step_count": 12,
+        "attach_requested": false,
+        "http_host": null,
+        "attach_host": null,
+        "attach_port": null,
+        "attach_token": null,
+        "last_error": null
+      }
+    }
+  ],
+  "summary": {
+    "scenarios": 2,
+    "scenarios_passed": 2,
+    "suites_built_and_runnable": 1,
+    "total_tool_calls": 45,
+    "total_failed_tool_calls": 0,
+    "total_issues": 0,
+    "total_step_seconds": 13.11
+  }
+}

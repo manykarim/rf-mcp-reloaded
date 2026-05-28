@@ -20,7 +20,7 @@ from rfmcp_core.contracts.hints import (
     RecoveryCandidate,
 )
 from rfmcp_core.contracts.provenance import ProvenanceKind, ProvenanceRecord
-from rfmcp_core.contracts.repair import RepairSessionSummary, RepairStepResult, SessionStatus
+from rfmcp_core.contracts.session import SessionSummary, StepResult, SessionStatus
 from rfmcp_core.contracts.results import (
     ExecutionProof,
     GenerationEvidenceItem,
@@ -78,8 +78,8 @@ __all__ = [
     "RefactorRunVerification",
     "RecoveryCandidate",
     "RepairDiagnosticResult",
-    "RepairSessionSummary",
-    "RepairStepResult",
+    "SessionSummary",
+    "StepResult",
     "RobotContextMutationResult",
     "RobotContextView",
     "ScaffoldArtifact",

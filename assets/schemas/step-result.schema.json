@@ -164,6 +164,110 @@
       "title": "SessionStatus",
       "type": "string"
     },
+    "SessionSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "attach_host": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attach Host"
+        },
+        "attach_port": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attach Port"
+        },
+        "attach_requested": {
+          "default": false,
+          "title": "Attach Requested",
+          "type": "boolean"
+        },
+        "attach_token": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attach Token"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "http_host": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Http Host"
+        },
+        "last_error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ErrorEnvelope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "session_id": {
+          "minLength": 1,
+          "title": "Session Id",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/SessionStatus"
+        },
+        "step_count": {
+          "minimum": 0,
+          "title": "Step Count",
+          "type": "integer"
+        },
+        "transport": {
+          "enum": [
+            "stdio",
+            "http"
+          ],
+          "title": "Transport",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "status",
+        "transport",
+        "created_at",
+        "step_count"
+      ],
+      "title": "SessionSummary",
+      "type": "object"
+    },
     "Severity": {
       "enum": [
         "info",
@@ -177,29 +281,12 @@
   },
   "additionalProperties": false,
   "properties": {
-    "attach_requested": {
-      "default": false,
-      "title": "Attach Requested",
-      "type": "boolean"
-    },
-    "created_at": {
-      "format": "date-time",
-      "title": "Created At",
+    "detail": {
+      "minLength": 1,
+      "title": "Detail",
       "type": "string"
     },
-    "http_host": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "title": "Http Host"
-    },
-    "last_error": {
+    "error": {
       "anyOf": [
         {
           "$ref": "#/$defs/ErrorEnvelope"
@@ -210,35 +297,31 @@
       ],
       "default": null
     },
-    "session_id": {
+    "instruction": {
       "minLength": 1,
-      "title": "Session Id",
+      "title": "Instruction",
       "type": "string"
     },
-    "status": {
-      "$ref": "#/$defs/SessionStatus"
+    "ok": {
+      "title": "Ok",
+      "type": "boolean"
     },
-    "step_count": {
-      "minimum": 0,
-      "title": "Step Count",
+    "session": {
+      "$ref": "#/$defs/SessionSummary"
+    },
+    "step_index": {
+      "minimum": 1,
+      "title": "Step Index",
       "type": "integer"
-    },
-    "transport": {
-      "enum": [
-        "stdio",
-        "http"
-      ],
-      "title": "Transport",
-      "type": "string"
     }
   },
   "required": [
-    "session_id",
-    "status",
-    "transport",
-    "created_at",
-    "step_count"
+    "ok",
+    "session",
+    "step_index",
+    "instruction",
+    "detail"
   ],
-  "title": "RepairSessionSummary",
+  "title": "StepResult",
   "type": "object"
 }

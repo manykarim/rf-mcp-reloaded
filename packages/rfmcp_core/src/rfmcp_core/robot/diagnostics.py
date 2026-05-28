@@ -19,34 +19,32 @@ from rfmcp_core.hints.plugin_manager import ProviderPluginManager
 from rfmcp_core.robot.validation import validate_robot_artifact
 
 
-def _split_robot_cells(raw_line: str) -> list[str]:
-    return [part.strip() for part in re.split(r"\t+|\s{2,}", raw_line.strip()) if part.strip()]
-
-
 def _scan_robot_artifact(target: str) -> tuple[list[str], list[str]]:
+    """Extract imported libraries and called keywords via Robot Framework's AST."""
+
     path = Path(target)
     if not path.exists() or path.suffix != ".robot":
         return [], []
 
-    libraries: list[str] = []
-    keywords: list[str] = []
-    section = ""
-    for raw_line in path.read_text().splitlines():
-        stripped = raw_line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if stripped.startswith("***") and stripped.endswith("***"):
-            section = stripped.casefold()
-            continue
+    from robot.api import get_model
+    from robot.api.parsing import ModelVisitor
 
-        cells = _split_robot_cells(raw_line)
-        if not cells:
-            continue
-        if section == "*** settings ***" and cells[0].casefold() == "library" and len(cells) > 1:
-            libraries.append(cells[1])
-        elif section in {"*** test cases ***", "*** keywords ***"} and raw_line.startswith((" ", "\t")):
-            keywords.append(cells[0])
-    return libraries, keywords
+    class _ArtifactScanner(ModelVisitor):
+        def __init__(self) -> None:
+            self.libraries: list[str] = []
+            self.keywords: list[str] = []
+
+        def visit_LibraryImport(self, node) -> None:  # noqa: N802 (robot visitor naming)
+            if node.name:
+                self.libraries.append(node.name)
+
+        def visit_KeywordCall(self, node) -> None:  # noqa: N802
+            if node.keyword:
+                self.keywords.append(node.keyword)
+
+    scanner = _ArtifactScanner()
+    scanner.visit(get_model(str(path)))
+    return scanner.libraries, scanner.keywords
 
 
 def _classify_error_code(failure_message: str | None, explicit_error_code: str | None) -> str | None:

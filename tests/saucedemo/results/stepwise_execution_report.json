@@ -1,0 +1,86 @@
+{
+  "suite": "SauceDemo Checkout E2E",
+  "url": "https://www.saucedemo.com",
+  "executed_at": "2026-05-27T10:21:41.548864",
+  "total_phases": 5,
+  "passed": 5,
+  "failed": 0,
+  "total_elapsed_seconds": 26.71,
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Setup: Open Browser & Navigate",
+      "keywords": [
+        "New Browser",
+        "New Context",
+        "New Page",
+        "Get Title"
+      ],
+      "passed": true,
+      "return_code": 0,
+      "elapsed_seconds": 4.75,
+      "stdout": "==============================================================================\nStep1 Setup Open Browser And Navigat                                          \n==============================================================================\nStep 1 - Setup Open Browser And Navigate                              | PASS |\n------------------------------------------------------------------------------\nStep1 Setup Open Browser And Navigat                                  | PASS |\n1 test, 1 passed, 0 failed\n==============================================================================\nOutput:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step1_output.xml\nLog:     /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step1_log.html\nReport:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step1_report.html\n",
+      "stderr": ""
+    },
+    {
+      "phase": 2,
+      "name": "Login with valid credentials",
+      "keywords": [
+        "Fill Text (username)",
+        "Fill Text (password)",
+        "Click (login)",
+        "Get Url"
+      ],
+      "passed": true,
+      "return_code": 0,
+      "elapsed_seconds": 5.22,
+      "stdout": "==============================================================================\nStep2 Login With Valid Credentials                                            \n==============================================================================\nStep 2 - Login With Valid Credentials                                 | PASS |\n------------------------------------------------------------------------------\nStep2 Login With Valid Credentials                                    | PASS |\n1 test, 1 passed, 0 failed\n==============================================================================\nOutput:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step2_output.xml\nLog:     /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step2_log.html\nReport:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step2_report.html\n",
+      "stderr": ""
+    },
+    {
+      "phase": 3,
+      "name": "Add two items to cart",
+      "keywords": [
+        "Click (add backpack)",
+        "Get Text (badge=1)",
+        "Click (add bike light)",
+        "Get Text (badge=2)"
+      ],
+      "passed": true,
+      "return_code": 0,
+      "elapsed_seconds": 5.72,
+      "stdout": "==============================================================================\nStep3 Add Two Items To Cart                                                   \n==============================================================================\nStep 3 - Add Two Items To Cart                                        | PASS |\n------------------------------------------------------------------------------\nStep3 Add Two Items To Cart                                           | PASS |\n1 test, 1 passed, 0 failed\n==============================================================================\nOutput:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step3_output.xml\nLog:     /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step3_log.html\nReport:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step3_report.html\n",
+      "stderr": ""
+    },
+    {
+      "phase": 4,
+      "name": "Navigate to cart & verify items",
+      "keywords": [
+        "Click (cart link)",
+        "Get Url (cart)",
+        "Get Element Count (2 items)"
+      ],
+      "passed": true,
+      "return_code": 0,
+      "elapsed_seconds": 5.27,
+      "stdout": "==============================================================================\nStep4 Navigate To Cart And Verify It                                          \n==============================================================================\nStep 4 - Navigate To Cart And Verify Items                            | PASS |\n------------------------------------------------------------------------------\nStep4 Navigate To Cart And Verify It                                  | PASS |\n1 test, 1 passed, 0 failed\n==============================================================================\nOutput:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step4_output.xml\nLog:     /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step4_log.html\nReport:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step4_report.html\n",
+      "stderr": ""
+    },
+    {
+      "phase": 5,
+      "name": "Checkout flow & verify success",
+      "keywords": [
+        "Click (checkout)",
+        "Fill Text (info)",
+        "Click (continue)",
+        "Click (finish)",
+        "Get Text (success)"
+      ],
+      "passed": true,
+      "return_code": 0,
+      "elapsed_seconds": 5.75,
+      "stdout": "==============================================================================\nStep5 Checkout Flow And Verify Succe                                          \n==============================================================================\nStep 5 - Checkout Flow And Verify Success                             | PASS |\n------------------------------------------------------------------------------\nStep5 Checkout Flow And Verify Succe                                  | PASS |\n1 test, 1 passed, 0 failed\n==============================================================================\nOutput:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step5_output.xml\nLog:     /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step5_log.html\nReport:  /home/many/workspace/rfmcp-reloaded/tests/saucedemo/results/step5_report.html\n",
+      "stderr": ""
+    }
+  ]
+}

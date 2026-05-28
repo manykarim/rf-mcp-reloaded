@@ -20,10 +20,10 @@ from rfmcp_core.contracts import (
     ValidationResult,
 )
 from rfmcp_core.hints import resolve_hints
-from rfmcp_core.robot import run_repair_diagnostics
+from rfmcp_core.robot import escape_comment_cells, render_suite_text, run_repair_diagnostics
 from rfmcp_core.robot.validation import validate_robot_artifact
 
-from rfmcp_cli.workflows.grounding import scaffold_suite
+from rfmcp_cli.workflows.grounding import _generic_scaffold_guidance
 
 ROBOT_EXECUTION_TIMEOUT_SECONDS = 30
 
@@ -54,7 +54,7 @@ def _generation_error(
 
 def _normalize_body_line(raw: str) -> str:
     stripped = raw.strip()
-    return f"    {stripped}" if stripped else ""
+    return f"    {escape_comment_cells(stripped)}" if stripped else ""
 
 
 def _build_documentation(tasks: list[str], documentation: str | None, test_case_name: str) -> str:
@@ -241,29 +241,8 @@ def generate_suite_artifact(
             error=error,
         )
 
-    scaffold = scaffold_suite(
-        target,
-        suite_name=suite_name,
-        test_case_name=test_case_name,
-        libraries=request.libraries,
-        resources=request.resources,
-        documentation=_build_documentation(request.tasks, documentation, test_case_name),
-        force=force,
-    )
-    if scaffold.error is not None:
-        return GenerationResult(
-            ok=False,
-            request=request,
-            artifact=scaffold.artifact,
-            evidence=[],
-            execution=ExecutionProof(ok=False, command=[], detail=scaffold.error.message),
-            preventive_guidance=scaffold.preventive_guidance,
-            correction_path=[],
-            error=scaffold.error,
-        )
-
-    body_lines = [_normalize_body_line(item) for item in [*request.steps, *request.assertions] if item.strip()]
-    if not body_lines:
+    body_steps = [item for item in [*request.steps, *request.assertions] if item.strip()]
+    if not body_steps:
         error = _generation_error(
             "missing-generation-input",
             "Generation requires at least one non-empty requested step or assertion.",
@@ -281,33 +260,77 @@ def generate_suite_artifact(
             ),
             evidence=[],
             execution=ExecutionProof(ok=False, command=[], detail=error.message),
-            preventive_guidance=scaffold.preventive_guidance,
+            preventive_guidance=[],
             correction_path=[],
             error=error,
         )
-    updated_content = _inject_test_body(scaffold.artifact.content, body_lines)
-    if updated_content is None:
+
+    path = Path(target)
+    if path.suffix != ".robot":
         error = _generation_error(
-            "generation-injection-failed",
-            "Generated test steps could not be injected into the scaffolded suite body.",
-            "Recreate the scaffold target or inspect the generated suite template before retrying generation.",
+            "unsupported-extension",
+            "Generation expects a .robot file target.",
+            "Point the generate command at a .robot file path and retry.",
+            details={"target": target, "suffix": path.suffix},
+        )
+        return GenerationResult(
+            ok=False,
+            request=request,
+            artifact=ScaffoldArtifact(
+                path=target,
+                kind="suite",
+                content=f"# Generation refused: {error.code}.\n",
+                validation=ValidationResult(ok=False, target=target, error=error),
+            ),
+            evidence=[],
+            execution=ExecutionProof(ok=False, command=[], detail=error.message),
+            preventive_guidance=[],
+            correction_path=[],
+            error=error,
+        )
+
+    if path.exists() and not force:
+        error = _generation_error(
+            "target-exists",
+            f"Generation target '{target}' already exists.",
+            "Rerun with force enabled or choose a new target path.",
             retryable=True,
             details={"target": target},
         )
         return GenerationResult(
             ok=False,
             request=request,
-            artifact=scaffold.artifact,
+            artifact=ScaffoldArtifact(
+                path=target,
+                kind="suite",
+                content=f"# Generation refused: {error.code}.\n",
+                validation=ValidationResult(ok=False, target=target, error=error),
+            ),
             evidence=[],
             execution=ExecutionProof(ok=False, command=[], detail=error.message),
-            preventive_guidance=scaffold.preventive_guidance,
+            preventive_guidance=[],
             correction_path=[],
             error=error,
         )
-    path = Path(target)
-    path.write_text(updated_content, encoding="utf-8")
+
+    # BuiltIn is implicit in scaffold output; mirror that for canonical Settings.
+    deduped_libraries = list(dict.fromkeys(["BuiltIn", *request.libraries]))
+    preventive_guidance = _generic_scaffold_guidance("suite", libraries=deduped_libraries)
+
+    # Render the suite via robot.api.parsing (canonical RF7 format: modern AS aliases,
+    # no obsolete `${x} =`, proper section ordering, 4-space separators).
+    content = render_suite_text(
+        test_case_name=test_case_name,
+        documentation=_build_documentation(request.tasks, documentation, test_case_name),
+        libraries=deduped_libraries,
+        resources=list(request.resources),
+        body_steps=body_steps,
+    )
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
     validation = validate_robot_artifact(target)
-    artifact = scaffold.artifact.model_copy(update={"content": updated_content, "validation": validation})
+    artifact = ScaffoldArtifact(path=target, kind="suite", content=content, validation=validation)
     correction_path = _correction_path(target)
 
     if not validation.ok:
@@ -324,9 +347,9 @@ def generate_suite_artifact(
             ok=False,
             request=request,
             artifact=artifact,
-            evidence=_build_evidence(request, artifact_content=updated_content, execution_ok=False),
+            evidence=_build_evidence(request, artifact_content=content, execution_ok=False),
             execution=ExecutionProof(ok=False, command=[], detail=error.message),
-            preventive_guidance=scaffold.preventive_guidance,
+            preventive_guidance=preventive_guidance,
             diagnostics=diagnostics,
             hint_resolution=hint_resolution,
             correction_path=correction_path,
@@ -339,9 +362,9 @@ def generate_suite_artifact(
             ok=True,
             request=request,
             artifact=artifact,
-            evidence=_build_evidence(request, artifact_content=updated_content, execution_ok=True),
+            evidence=_build_evidence(request, artifact_content=content, execution_ok=True),
             execution=execution,
-            preventive_guidance=scaffold.preventive_guidance,
+            preventive_guidance=preventive_guidance,
             correction_path=[],
         )
 
@@ -359,9 +382,9 @@ def generate_suite_artifact(
         ok=False,
         request=request,
         artifact=artifact,
-        evidence=_build_evidence(request, artifact_content=updated_content, execution_ok=False),
+        evidence=_build_evidence(request, artifact_content=content, execution_ok=False),
         execution=execution,
-        preventive_guidance=scaffold.preventive_guidance,
+        preventive_guidance=preventive_guidance,
         diagnostics=diagnostics,
         hint_resolution=hint_resolution,
         correction_path=correction_path,

@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review in a fresh context
 
 generated: 2026-05-25T11:15:58+02:00
-last_updated: 2026-05-26T19:41:54+02:00
+last_updated: 2026-05-27T11:00:00+02:00
 project: rfmcp-reloaded
 project_key: NOKEY
 tracking_system: file-system
@@ -69,3 +69,10 @@ development_status:
   4-4-add-ci-compatibility-bundle-validation-and-release-gates: backlog
   4-5-produce-benchmark-backed-release-evidence: backlog
   epic-4-retrospective: optional
+  epic-5: done
+  5-1-execute-real-keywords-in-an-in-process-live-rf-context: done
+  5-2-back-runtime-context-get-set-with-the-live-namespace: done
+  5-3-back-approved-inspection-snapshots-with-real-library-state: done
+  5-4-add-the-opt-in-attach-bridge-to-a-running-rf-process: done
+  5-5-prove-the-live-mcp-repair-path-end-to-end: done
+  epic-5-retrospective: optional

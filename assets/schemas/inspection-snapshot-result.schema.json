@@ -155,13 +155,58 @@
       "title": "ProvenanceRecord",
       "type": "object"
     },
-    "RepairSessionSummary": {
+    "SessionStatus": {
+      "enum": [
+        "open",
+        "closed",
+        "interrupted"
+      ],
+      "title": "SessionStatus",
+      "type": "string"
+    },
+    "SessionSummary": {
       "additionalProperties": false,
       "properties": {
+        "attach_host": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attach Host"
+        },
+        "attach_port": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attach Port"
+        },
         "attach_requested": {
           "default": false,
           "title": "Attach Requested",
           "type": "boolean"
+        },
+        "attach_token": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attach Token"
         },
         "created_at": {
           "format": "date-time",
@@ -220,17 +265,8 @@
         "created_at",
         "step_count"
       ],
-      "title": "RepairSessionSummary",
+      "title": "SessionSummary",
       "type": "object"
-    },
-    "SessionStatus": {
-      "enum": [
-        "open",
-        "closed",
-        "interrupted"
-      ],
-      "title": "SessionStatus",
-      "type": "string"
     },
     "Severity": {
       "enum": [
@@ -259,8 +295,11 @@
     "payload": {
       "title": "Payload"
     },
+    "provenance": {
+      "$ref": "#/$defs/ProvenanceRecord"
+    },
     "session": {
-      "$ref": "#/$defs/RepairSessionSummary"
+      "$ref": "#/$defs/SessionSummary"
     },
     "snapshot_kind": {
       "$ref": "#/$defs/SnapshotKind"
@@ -269,6 +308,7 @@
   "required": [
     "session",
     "snapshot_kind",
+    "provenance",
     "payload"
   ],
   "title": "InspectionSnapshotResult",

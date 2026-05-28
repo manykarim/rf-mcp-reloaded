@@ -387,6 +387,19 @@ This matches the local-first nature of the product and keeps the security model 
 **Rationale:**
 This keeps MCP useful across more hosts and deployment contexts without reopening the core boundary question. It also ensures that recovery guidance, machine automation, and human debugging all rely on one consistent contract model instead of separate ad hoc output paths.
 
+### Live Execution Engine for the MCP Core
+
+The MCP Core's live-state tools are backed by a real Robot Framework execution engine, not an in-memory simulation. This is the home for the behavior FR-2 requires.
+
+- An in-process execution engine (`packages/rfmcp_core/src/rfmcp_core/runtime/execution.py`) owns a persistent Robot Framework execution context per repair session, using Robot Framework's public running APIs (`EXECUTION_CONTEXTS`, namespace, `BuiltIn`) to run one keyword per step and to keep variables, imports, and library instances alive across steps.
+- `runtime/stepper.py` delegates to this engine instead of recording instruction strings; `runtime/session.py` holds a reference to the live context rather than a placeholder variable dict; `runtime/context.py` and `runtime/snapshot.py` read real namespace state and real library instances.
+- Keyword failures propagate as the shared `ErrorEnvelope` with `provenance = OBSERVED` and real Robot Framework error detail; a step is never reported successful unless the keyword actually passed.
+- An opt-in attach bridge lets a session target an already-running external Robot Framework process over a loopback-only, ephemeral-credential channel. Attach reuses the existing local-policy capability gating and stays disabled by default; the in-process engine is the default path.
+- Application-state inspection (DOM, accessibility, screenshot, last API response, app context) is sourced from the real loaded library instances (Browser, Selenium, Requests) for whichever the session has imported; unsupported kinds return a structured capability error.
+
+**Rationale:**
+This closes the gap between the FR-2 intent and the Epic 2 scaffold while preserving the bounded tool allowlist and the local-first safety model. It composes with Robot Framework's own runtime rather than reimplementing execution, and keeps a single source of truth for execution state. The seam discipline still holds: stateless helpers stay in the CLI; only live execution and approved inspection live behind MCP.
+
 ### Infrastructure & Deployment
 
 - Primary distribution should be through PyPI.
@@ -534,9 +547,10 @@ This version table is the implementation baseline for workspace initialization, 
 3. Implement the YAML pack loader, schema validation, provider discovery, precedence rules, and disposable cache.
 4. Implement local policy parsing, capability gating, and attach safety checks.
 5. Build the bounded FastMCP surface over `stdio` and HTTP.
-6. Build CLI workflows with human and `--json` outputs against the same core contracts.
-7. Add structured logging, benchmark capture, and CI matrix validation.
-8. Generate install/setup artifacts and plugin/skill bundles.
+6. Wire the live Robot Framework execution engine (in-process context plus opt-in attach) behind the MCP Core tools.
+7. Build CLI workflows with human and `--json` outputs against the same core contracts.
+8. Add structured logging, benchmark capture, and CI matrix validation.
+9. Generate install/setup artifacts and plugin/skill bundles.
 
 **Cross-Component Dependencies:**
 

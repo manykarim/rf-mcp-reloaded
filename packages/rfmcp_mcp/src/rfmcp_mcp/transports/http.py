@@ -5,7 +5,7 @@ import sys
 
 from fastmcp import FastMCP
 
-from rfmcp_core.runtime.session import LiveRepairSessionStore
+from rfmcp_core.runtime.session import LiveSessionStore
 from rfmcp_mcp.security.attach_policy import PolicyGateError, validate_transport_policy
 from rfmcp_mcp.server import build_server
 
@@ -16,7 +16,7 @@ DEFAULT_PORT = 8080
 def create_http_server(
     host: str = DEFAULT_HOST,
     *,
-    store: LiveRepairSessionStore | None = None,
+    store: LiveSessionStore | None = None,
 ) -> FastMCP:
     error = validate_transport_policy("http", host=host)
     if error is not None:

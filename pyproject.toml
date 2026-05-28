@@ -50,4 +50,9 @@ dev = [
     "rfmcp-provider-browser",
     "robotframework>=7.4,<7.5",
     "typer>=0.25.1,<1",
+    "robotframework-browser>=19.15.1",
+]
+web = [
+    "robotframework-browser>=19.15.1",
+    "robotframework-seleniumlibrary>=6.9.0",
 ]

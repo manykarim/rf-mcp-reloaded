@@ -375,7 +375,7 @@ class SkillManifest(BaseModel):
     fallback_commands: list[str] = Field(default_factory=list)
 
 
-class RepairSessionSummary(BaseModel):
+class SessionSummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     session_id: str = Field(min_length=1)
@@ -385,14 +385,19 @@ class RepairSessionSummary(BaseModel):
     step_count: int = Field(ge=0)
     attach_requested: bool = False
     http_host: str | None = None
+    # Loopback attach bridge target + the per-session ephemeral token the operator
+    # configures on their external Robot Framework listener (None unless attaching).
+    attach_host: str | None = None
+    attach_port: int | None = None
+    attach_token: str | None = None
     last_error: ErrorEnvelope | None = None
 
 
-class RepairStepResult(BaseModel):
+class StepResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     ok: bool
-    session: RepairSessionSummary
+    session: SessionSummary
     step_index: int = Field(ge=1)
     instruction: str = Field(min_length=1)
     detail: str = Field(min_length=1)
@@ -410,7 +415,7 @@ class SnapshotKind(str, Enum):
 class RobotContextView(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    session: RepairSessionSummary
+    session: SessionSummary
     variables: dict[str, Any] = Field(default_factory=dict)
     libraries: list[str] = Field(default_factory=list)
 
@@ -418,7 +423,7 @@ class RobotContextView(BaseModel):
 class RobotContextMutationResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    session: RepairSessionSummary
+    session: SessionSummary
     key: str = Field(min_length=1)
     value: Any
 
@@ -426,6 +431,7 @@ class RobotContextMutationResult(BaseModel):
 class InspectionSnapshotResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    session: RepairSessionSummary
+    session: SessionSummary
     snapshot_kind: SnapshotKind
+    provenance: ProvenanceRecord
     payload: Any

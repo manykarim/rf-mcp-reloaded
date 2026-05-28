@@ -96,7 +96,7 @@ No standalone UX design document was present in the planning artifacts. UX-speci
 
 FR1: Epic 2 - Bounded live repair-session capability and approved live-state inspection.
 
-FR2: Epic 2 - Persistent repair sessions, runtime context access, and flagship repair flow.
+FR2: Epic 2 (bounded surface/contracts) and Epic 5 (real live execution, runtime context, and application-state inspection) - persistent repair sessions, runtime context access, and flagship repair flow.
 
 FR3: Epic 2 - Explicit MCP-versus-CLI boundary, policy enforcement, and repair workflow guidance.
 
@@ -143,6 +143,10 @@ Automation Engineers can ground keywords, scaffold suites, generate runnable tes
 ### Epic 4: Onboard Supported Hosts to Reference Workflows
 Operators can install and use the workflows across the supported hosts with clear compatibility guidance, deterministic fallback mapping, validated bundles, and benchmark-backed release proof.
 **FRs covered:** FR8, FR9, FR13, FR14
+
+### Epic 5: Wire a Live Robot Framework Execution Engine Behind the MCP Core
+Automation Engineers get real stepwise keyword execution against persistent live Robot Framework state — real variables, imports, pass/fail, application-state inspection, and an opt-in attach path — replacing the bounded simulation that Epic 2 scaffolded.
+**FRs covered:** FR1, FR2, FR10, FR15 (realization upgrade)
 
 ## Story Traceability Table
 
@@ -558,6 +562,7 @@ So that portability, schema stability, and flagship workflow claims are checked 
 **Given** bundles, schemas, contracts, and flagship workflows are part of the product surface
 **When** CI workflows are implemented
 **Then** GitHub Actions validates schema sync, supported Python and Robot Framework ranges, host compatibility assertions, bundle validity, and flagship proof scenarios
+**And** the Epic 5 live MCP repair proof (`scripts/run_epic5_live_mcp_proof.py`) is run as a release gate alongside the CLI/subprocess flagship proof
 **And** failures block release when public-surface guarantees drift.
 
 **Given** contributors evolve package structure or host outputs
@@ -578,6 +583,7 @@ So that scope decisions and portability claims can be defended with measured out
 **Given** the flagship repair, generation, and refactor scenarios are implemented
 **When** the benchmark and release-evidence story is completed
 **Then** the project records comparable measures for setup friction, tool-call count, failed tool-call rate, runnable success, correction burden, and token or context usage where available
+**And** the evidence includes the Epic 5 live MCP repair proof pack (`dist/benchmarks/epic5-live-mcp-proof.json`) so the live-execution path is measured, not only the CLI/subprocess path
 **And** the benchmark pack remains small enough to sustain as an open-source proof set.
 
 **Given** a release is prepared
@@ -589,3 +595,94 @@ So that scope decisions and portability claims can be defended with measured out
 **When** release readiness is reviewed
 **Then** the gap is called out explicitly instead of being implied away
 **And** unsupported benefit claims are blocked from the release narrative.
+
+## Epic 5: Wire a Live Robot Framework Execution Engine Behind the MCP Core
+
+Replace the simulated live-session stepper with a real Robot Framework execution engine that preserves live context across steps, executes keywords for real, exposes real application state, and supports an opt-in attach path — without widening the bounded MCP tool allowlist. This epic also drops the misleading `repair` qualifier from the general live-session primitive (the session and step tools serve repair, authoring, and exploration alike), keeping `repair` only where behavior is genuinely repair-specific.
+
+### Story 5.1: Execute Real Keywords in an In-Process Live RF Context
+
+As an Automation Engineer,
+I want each repair step to run as a real Robot Framework keyword in a persistent in-process context,
+So that variables, imports, and library state carry across steps and real failures surface honestly.
+
+**Requirements:** FR2, NFR1, NFR3
+
+**Acceptance Criteria:**
+
+**Given** an open live session
+**When** `rf_execute_step` runs a keyword (e.g. `Should Be Equal    1    2`)
+**Then** the keyword executes through a real Robot Framework execution context (`EXECUTION_CONTEXTS` / namespace / `BuiltIn`)
+**And** a genuine pass/fail is returned through the existing `StepResult` + `ErrorEnvelope` contracts
+**And** the in-memory `step_executor=None` simulation path is removed.
+
+**Given** a multi-step session
+**When** a later step references a variable assigned by an earlier step
+**Then** the live namespace resolves it so state persists across steps without restarting the context.
+
+**Given** the live-session primitive is general (used for repair, authoring, and exploration alike)
+**When** the engine lands
+**Then** the session and step tools and types drop the `repair` qualifier — `rf_open_session`, `rf_get_session`, `rf_execute_step`, `rf_close_session`, `LiveSessionStore`, `LiveStepper`, `SessionSummary`, `StepResult`, and the `session` / `step-result` JSON Schemas
+**And** the `repair` name is retained only where behavior is genuinely repair-specific (repair diagnostics, repair hints, the Browser Library flagship repair skill, FR15).
+
+### Story 5.2: Back Runtime Context Get/Set With the Live Namespace
+
+As an Automation Engineer,
+I want `rf_get_context` / `rf_set_context` to read and write the real Robot Framework runtime namespace,
+So that the context I inspect and mutate is execution truth, not a placeholder.
+
+**Requirements:** FR2, NFR1
+
+**Acceptance Criteria:**
+
+**Given** a live session with executed steps
+**When** `rf_get_context` is called
+**Then** it returns real Robot Framework variables and actually-loaded libraries instead of the seeded placeholder dict
+**And** `rf_set_context` writes into the live namespace under the existing policy and capability gating.
+
+### Story 5.3: Back Approved Inspection Snapshots With Real Library State
+
+As an Automation Engineer,
+I want `app_inspect_state` to capture real DOM, accessibility, screenshot, last API response, and app context,
+So that repair decisions use the live application instead of synthetic fixtures.
+
+**Requirements:** FR2, NFR1
+
+**Acceptance Criteria:**
+
+**Given** a live session whose loaded libraries support a snapshot kind (Browser, Selenium, or Requests)
+**When** `app_inspect_state` is requested for an approved kind
+**Then** the snapshot is captured from the real library instance with provenance `OBSERVED`
+**And** the synthetic `repair-session-fixture` payloads are removed
+**And** snapshot kinds unsupported by the active libraries return a structured, capability-gated error.
+
+### Story 5.4: Add the Opt-In Attach Bridge to a Running RF Process
+
+As an Automation Engineer,
+I want to attach the repair session to an already-running Robot Framework process,
+So that I can inspect and step against a live application I already have open.
+
+**Requirements:** FR1, FR2, NFR1
+
+**Acceptance Criteria:**
+
+**Given** attach is enabled by explicit local policy and the session is opened with `attach_requested=true`
+**When** the execute, context, and inspect tools run
+**Then** they route to the attached external process over a loopback-only, ephemeral-credential bridge
+**And** attach stays disabled by default, is visible to the operator, and can be stopped explicitly
+**And** no new MCP tools are added beyond the existing allowlist.
+
+### Story 5.5: Prove the Live MCP Repair Path End-to-End
+
+As a maintainer,
+I want the flagship Browser Library repair proven through the live MCP path,
+So that FR15's proof exercises real execution, not only the CLI subprocess fallback.
+
+**Requirements:** FR2, FR15, NFR2, NFR5
+
+**Acceptance Criteria:**
+
+**Given** the live execution engine from Stories 5.1-5.4
+**When** the flagship repair scenario runs through the MCP tools
+**Then** an end-to-end live repair is demonstrated and recorded in benchmark evidence
+**And** the Epic 4 CI and benchmark stories (4.4, 4.5) reference the live path as a release gate.

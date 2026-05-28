@@ -1,0 +1,76 @@
+{"level":"info","time":"2026-05-27T18:56:48.694Z","seq":1,"component":"browser-library","msg":"Listening on 127.0.0.1:43441"}
+{"level":"info","time":"2026-05-27T18:56:48.718Z","seq":2,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:48.842Z","seq":3,"component":"browser-library","msg":"Adding browser to stack: chromium, version: 148.0.7778.96"}
+{"level":"info","time":"2026-05-27T18:56:48.846Z","seq":4,"component":"browser-library","msg":"Adding 0 contexts to browser"}
+{"level":"info","time":"2026-05-27T18:56:48.846Z","seq":5,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:48.862Z","seq":6,"component":"browser-library","event_kind":"grpc","action":"newContext","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:48.863Z","seq":7,"component":"browser-library","msg":"Creating new context with options: {\"acceptDownloads\":true,\"bypassCSP\":false,\"forcedColors\":\"none\",\"ignoreHTTPSErrors\":false,\"javaScriptEnabled\":true,\"offline\":false,\"reducedMotion\":\"no-preference\",\"serviceWorkers\":\"allow\",\"viewport\":{\"width\":1280,\"height\":720}}"}
+{"level":"info","time":"2026-05-27T18:56:48.863Z","seq":8,"component":"browser-library","msg":"currentBrowser: {\"_contextStack\":[],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@5c48059179b6077af46d6317dcbf0b9d\"},\"name\":\"chromium\",\"id\":\"browser=ce506736-970d-4eb7-8669-432c7690ca6a\",\"headless\":true}"}
+{"level":"info","time":"2026-05-27T18:56:48.863Z","seq":9,"component":"browser-library","msg":"Trace file: "}
+{"level":"info","time":"2026-05-27T18:56:48.879Z","seq":10,"component":"browser-library","msg":"Setting default timeout for context context=446f8652-6596-49a3-af1a-250b42da81ff to 60000"}
+{"level":"info","time":"2026-05-27T18:56:48.879Z","seq":11,"component":"browser-library","msg":"Changed active context: context=446f8652-6596-49a3-af1a-250b42da81ff"}
+{"level":"info","time":"2026-05-27T18:56:48.879Z","seq":12,"component":"browser-library","event_kind":"grpc","action":"newContext","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:48.884Z","seq":13,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:48.885Z","seq":14,"component":"browser-library","msg":"currentBrowser: {\"_contextStack\":[{\"id\":\"context=446f8652-6596-49a3-af1a-250b42da81ff\",\"c\":{\"_type\":\"BrowserContext\",\"_guid\":\"browser-context@1eb2a221b0539ec74ba042cbd578a02c\"},\"pageStack\":[],\"options\":{\"acceptDownloads\":true,\"bypassCSP\":false,\"forcedColors\":\"none\",\"ignoreHTTPSErrors\":false,\"javaScriptEnabled\":true,\"offline\":false,\"reducedMotion\":\"no-preference\",\"serviceWorkers\":\"allow\",\"viewport\":{\"width\":1280,\"height\":720}},\"traceFile\":\"\"}],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@5c48059179b6077af46d6317dcbf0b9d\"},\"name\":\"chromium\",\"id\":\"browser=ce506736-970d-4eb7-8669-432c7690ca6a\",\"headless\":true}"}
+{"level":"info","time":"2026-05-27T18:56:48.937Z","seq":15,"component":"browser-library","msg":"Video path: undefined"}
+{"level":"info","time":"2026-05-27T18:56:48.937Z","seq":16,"component":"browser-library","msg":"Changed active page"}
+{"level":"info","time":"2026-05-27T18:56:48.950Z","seq":17,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:48.956Z","seq":18,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.260Z","seq":19,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.268Z","seq":20,"component":"browser-library","event_kind":"grpc","action":"click","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.269Z","seq":21,"component":"browser-library","msg":"Strict mode is enabled, find Locator with article:not(.product-card--compact)[data-product-id=\"12\"] button[data-test=\"add-to-cart-btn\"] in page."}
+{"level":"info","time":"2026-05-27T18:56:49.407Z","seq":22,"component":"browser-library","event_kind":"grpc","action":"click","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.414Z","seq":23,"component":"browser-library","event_kind":"grpc","action":"getText","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.414Z","seq":24,"component":"browser-library","msg":"Strict mode is enabled, find Locator with [data-cart-count] in page."}
+{"level":"info","time":"2026-05-27T18:56:49.509Z","seq":25,"component":"browser-library","msg":"Retrieved text for element [data-cart-count] containing 1"}
+{"level":"info","time":"2026-05-27T18:56:49.509Z","seq":26,"component":"browser-library","event_kind":"grpc","action":"getText","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.516Z","seq":27,"component":"browser-library","event_kind":"grpc","action":"click","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.516Z","seq":28,"component":"browser-library","msg":"Strict mode is enabled, find Locator with [aria-label=\"Add Echo Conference Speaker to cart\"] in page."}
+{"level":"info","time":"2026-05-27T18:56:49.559Z","seq":29,"component":"browser-library","event_kind":"grpc","action":"click","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.564Z","seq":30,"component":"browser-library","event_kind":"grpc","action":"getText","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.565Z","seq":31,"component":"browser-library","msg":"Strict mode is enabled, find Locator with [data-cart-count] in page."}
+{"level":"info","time":"2026-05-27T18:56:49.584Z","seq":32,"component":"browser-library","msg":"Retrieved text for element [data-cart-count] containing 1"}
+{"level":"info","time":"2026-05-27T18:56:49.584Z","seq":33,"component":"browser-library","event_kind":"grpc","action":"getText","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.598Z","seq":34,"component":"browser-library","event_kind":"grpc","action":"getText","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.598Z","seq":35,"component":"browser-library","msg":"Strict mode is enabled, find Locator with [data-cart-count] in page."}
+{"level":"info","time":"2026-05-27T18:56:49.629Z","seq":36,"component":"browser-library","msg":"Retrieved text for element [data-cart-count] containing 1"}
+{"level":"info","time":"2026-05-27T18:56:49.630Z","seq":37,"component":"browser-library","event_kind":"grpc","action":"getText","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.644Z","seq":38,"component":"browser-library","event_kind":"grpc","action":"getText","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.645Z","seq":39,"component":"browser-library","msg":"Strict mode is enabled, find Locator with [data-cart-count] in page."}
+{"level":"info","time":"2026-05-27T18:56:49.672Z","seq":40,"component":"browser-library","msg":"Retrieved text for element [data-cart-count] containing 2"}
+{"level":"info","time":"2026-05-27T18:56:49.672Z","seq":41,"component":"browser-library","event_kind":"grpc","action":"getText","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.677Z","seq":42,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.763Z","seq":43,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.769Z","seq":44,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.769Z","seq":45,"component":"browser-library","msg":"Strict mode is enabled, find Locator with #checkout-email in page."}
+{"level":"info","time":"2026-05-27T18:56:49.799Z","seq":46,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.804Z","seq":47,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.804Z","seq":48,"component":"browser-library","msg":"Strict mode is enabled, find Locator with #checkout-name in page."}
+{"level":"info","time":"2026-05-27T18:56:49.814Z","seq":49,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.819Z","seq":50,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.819Z","seq":51,"component":"browser-library","msg":"Strict mode is enabled, find Locator with #checkout-address in page."}
+{"level":"info","time":"2026-05-27T18:56:49.828Z","seq":52,"component":"browser-library","event_kind":"grpc","action":"fillText","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:49.833Z","seq":53,"component":"browser-library","event_kind":"grpc","action":"click","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:49.833Z","seq":54,"component":"browser-library","msg":"Strict mode is enabled, find Locator with .checkout-form button[type=\"submit\"] in page."}
+{"level":"info","time":"2026-05-27T18:56:51.053Z","seq":55,"component":"browser-library","event_kind":"grpc","action":"click","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:51.061Z","seq":56,"component":"browser-library","event_kind":"grpc","action":"getElementCount","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:51.062Z","seq":57,"component":"browser-library","msg":"Strict mode is disabled, return Locator: .checkout-alert--success in page."}
+{"level":"info","time":"2026-05-27T18:56:51.095Z","seq":58,"component":"browser-library","event_kind":"grpc","action":"getElementCount","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:51.103Z","seq":59,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:51.106Z","seq":60,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:51.109Z","seq":61,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:51.109Z","seq":62,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:51.112Z","seq":63,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:51.112Z","seq":64,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:51.118Z","seq":65,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:51.118Z","seq":66,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:51.122Z","seq":67,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","msg":"Changed active context: context=446f8652-6596-49a3-af1a-250b42da81ff"}
+{"level":"info","time":"2026-05-27T18:56:51.123Z","seq":68,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","msg":"Changing current active page: page=c83754da-9a39-45c0-ae8c-604cbcca26a1"}
+{"level":"info","time":"2026-05-27T18:56:51.123Z","seq":69,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","msg":"Changed active page"}
+{"level":"info","time":"2026-05-27T18:56:51.128Z","seq":70,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:51.135Z","seq":71,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","msg":"Removed page=f8e23ace-0349-448f-be12-83c11262cd27 from context=446f8652-6596-49a3-af1a-250b42da81ff page stack"}
+{"level":"info","time":"2026-05-27T18:56:51.137Z","seq":72,"suite_id":"s1","suite_name":"Demoshop Checkout Authored","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:51.148Z","seq":73,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:51.149Z","seq":74,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-27T18:56:51.172Z","seq":75,"component":"browser-library","event_kind":"grpc","action":"closeAllBrowsers","status":"started"}
+{"level":"info","time":"2026-05-27T18:56:51.220Z","seq":76,"component":"browser-library","event_kind":"grpc","action":"closeAllBrowsers","status":"succeeded"}
