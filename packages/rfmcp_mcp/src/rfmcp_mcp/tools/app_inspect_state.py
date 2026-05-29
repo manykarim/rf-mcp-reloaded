@@ -97,13 +97,42 @@ def build_app_inspect_state_tool(store: LiveSessionStore):
         """Capture an approved inspection snapshot, persist it to disk, return a manifest.
 
         Returns ``{ok: True, snapshot: InspectionSnapshotResult}`` on success. The result
-        always carries ``manifest`` (path/bytes/sha256/format/summary) and optionally
-        ``content`` (set only when ``return_inline=True``) plus a ``truncated`` flag.
+        always carries ``manifest`` (path / bytes / sha256 / format / kind-specific
+        ``summary``). ``content`` is populated only when ``return_inline=True`` (truncated
+        to ``inline_max_bytes`` or the per-kind cap); ``truncated`` flags when that fired.
 
         Returns ``{ok: False, error: ErrorEnvelope}`` when the requested kind is not
         allowlisted for the session, no live source can provide it, or the session is
-        not open. ``network_log`` is intentionally unavailable in v1 — record a HAR at
-        ``New Context`` creation and read the HAR file directly.
+        not open.
+
+        Per-kind capability matrix:
+
+          kind          library required    selector     extra flags          summary key fields
+          app_context   —                   ignored      —                    library_count, variable_count
+          dom           Browser | Selenium  ignored      include_shadow_dom*  title, iframe_count, interactive_count,
+                                                                              has_declarative_shadow_roots, byte_count
+          dom_selector  Browser | Selenium  REQUIRED     —                    selector, byte_count, interactive_count
+          aria          Browser             optional     —                    node_count, distinct_roles, top_roles,
+                                            (css=html)                        depth, selector
+          screenshot    Browser | Selenium  ignored      —                    width, height, byte_count
+          console_log   Browser             ignored      —                    entry_count, level_histogram,
+                                                                              last_error_excerpt
+          network_log   —                   —            —                    v1 stub: record a HAR at New Context
+                                                                              creation (record_har_path=...) and read
+                                                                              the file directly
+
+        * ``include_shadow_dom=True`` walks open shadow roots via ``Evaluate JavaScript``
+          and emits declarative ``<template shadowrootmode="open">`` (Browser only). ``aria``
+          already traverses Shadow DOM + iframes via Playwright — usually the cheaper choice.
+
+        Inline caps when ``return_inline=True`` (override via ``inline_max_bytes``):
+
+          app_context    always full inline (compact JSON)
+          dom            8 KiB     aria           32 KiB     console_log   4 KiB
+          dom_selector  16 KiB     network_log     4 KiB     screenshot    never inline (binary)
+
+        When the cap fires, ``content`` is the truncated UTF-8 prefix, ``truncated=True``,
+        and the full payload is always at ``manifest.path``.
         """
 
         try:

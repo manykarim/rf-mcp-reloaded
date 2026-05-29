@@ -1,45 +1,45 @@
 {
   "target": "https://selectorshub.com/xpath-practice-page/",
-  "executed_at": "2026-05-29T08:51:08.607772+00:00",
-  "session_id": "session-aad1ae5ab4f6",
-  "duration_seconds": 7.43,
+  "executed_at": "2026-05-29T09:19:15.302306+00:00",
+  "session_id": "session-bf1a2305fe95",
+  "duration_seconds": 8.32,
   "setup_failures": [],
   "snapshots": {
     "dom_default": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-aad1ae5ab4f6/0001_dom.html",
-        "bytes": 470628,
-        "sha256": "6a362f3d2cd77fef757d8ed9c8e64ad024baebf4db5eeea6eef7ad66ea43b747",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-bf1a2305fe95/0001_dom.html",
+        "bytes": 470522,
+        "sha256": "963c427abd229f6ed1bae73942bf9300db3d1a18263f506bcfb013ecc4c4aa8e",
         "format": "html",
         "summary": {
           "title": "Xpath Practice Page | Shadow dom, nested shadow dom, iframe, nested iframe and more complex automation scenarios.",
           "iframe_count": 2,
           "interactive_count": 207,
           "has_declarative_shadow_roots": false,
-          "byte_count": 470628
+          "byte_count": 470522
         }
       },
-      "content_len": 470494,
+      "content_len": 470388,
       "contains_shadowroot_template": false
     },
     "dom_shadow_walked": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-aad1ae5ab4f6/0002_dom.html",
-        "bytes": 473442,
-        "sha256": "8f0d3f04143c27cf1ed0faed2a65f16693ddeb2035b272ee8147f1bf1fc1bfeb",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-bf1a2305fe95/0002_dom.html",
+        "bytes": 473336,
+        "sha256": "b014fd241f399a1a9bd961f996f3eab63a8fe2feca1f8f23c6d221c3eed6ea7b",
         "format": "html",
         "summary": {
           "title": "Xpath Practice Page | Shadow dom, nested shadow dom, iframe, nested iframe and more complex automation scenarios.",
           "iframe_count": 2,
           "interactive_count": 204,
           "has_declarative_shadow_roots": true,
-          "byte_count": 473442,
+          "byte_count": 473336,
           "shadow_dom_walked": true
         }
       },
-      "content_len": 473307,
+      "content_len": 473201,
       "contains_shadowroot_template": true,
       "shadow_root_template_count": 2,
       "provenance_source": "keyword:Evaluate JavaScript (shadow walker)",
@@ -48,9 +48,9 @@
     "aria": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-aad1ae5ab4f6/0003_aria.yaml",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-bf1a2305fe95/0003_aria.yaml",
         "bytes": 19499,
-        "sha256": "4d8909208035ddbd1ddc1fe2dd70b3a0567a492c07cd54de72c7a5b4a0cab88e",
+        "sha256": "7c43fea925bd1b6de5bf0e24940f5c25943f24541486448b50ef458a5471428a",
         "format": "yaml",
         "summary": {
           "node_count": 410,
@@ -77,14 +77,14 @@
     "screenshot": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-aad1ae5ab4f6/0004_screenshot.png",
-        "bytes": 74676,
-        "sha256": "f56696dd7f19e56d0b90eb1102d4fac2f473e1954115b0054826b19f758e0359",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-bf1a2305fe95/0004_screenshot.png",
+        "bytes": 74677,
+        "sha256": "f19d53e65d1f10efa4a05ece3f6693da2920bab5a2add01083c98c0abe7cb318",
         "format": "png",
         "summary": {
           "width": 1280,
           "height": 720,
-          "byte_count": 74676
+          "byte_count": 74677
         }
       },
       "content_returned_inline": false
