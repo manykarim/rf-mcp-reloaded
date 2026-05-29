@@ -1,13 +1,13 @@
 {
   "target": "https://selectorshub.com/xpath-practice-page/",
-  "executed_at": "2026-05-29T10:22:18.681551+00:00",
-  "session_id": "session-26606cc22ef4",
-  "duration_seconds": 7.48,
+  "executed_at": "2026-05-29T10:40:33.337167+00:00",
+  "session_id": "session-5e0f1913a278",
+  "duration_seconds": 7.42,
   "batch": {
     "step_count": 7,
     "executed": 7,
     "ok": true,
-    "elapsed_seconds": 6.89,
+    "elapsed_seconds": 6.84,
     "failed_index": null,
     "session_summary_returned_once": true
   },
@@ -15,16 +15,16 @@
     "dom_default": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-26606cc22ef4/0001_dom.html",
-        "bytes": 470629,
-        "sha256": "1b497e1672e837ac1448824b1b5fc6593b5d15764a9cfc241d5c08c1f8cdb47c",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-5e0f1913a278/0001_dom.html",
+        "bytes": 470627,
+        "sha256": "72b84348c17659e7b20475a45c6d89318178e53fb7d60e292a8c9571e5b9086d",
         "format": "html",
         "summary": {
           "title": "Xpath Practice Page | Shadow dom, nested shadow dom, iframe, nested iframe and more complex automation scenarios.",
           "iframe_count": 2,
           "interactive_count": 207,
           "has_declarative_shadow_roots": false,
-          "byte_count": 470629,
+          "byte_count": 470627,
           "closed_shadow_probe": {
             "custom_element_count": 0,
             "open_shadow_root_count": 0,
@@ -34,22 +34,22 @@
           "has_possible_closed_shadow_roots": false
         }
       },
-      "content_len": 470495,
+      "content_len": 470493,
       "contains_shadowroot_template": false
     },
     "dom_shadow_walked": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-26606cc22ef4/0002_dom.html",
-        "bytes": 473443,
-        "sha256": "cbb34aebbe235dbea9c3c7c583043a56b14e9275c21edc08548e4d09da23902e",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-5e0f1913a278/0002_dom.html",
+        "bytes": 473441,
+        "sha256": "9c1a0f93c37fbec58bf803b4f7bcb5f88e557150f0058ce8165c71350df13fbb",
         "format": "html",
         "summary": {
           "title": "Xpath Practice Page | Shadow dom, nested shadow dom, iframe, nested iframe and more complex automation scenarios.",
           "iframe_count": 2,
           "interactive_count": 204,
           "has_declarative_shadow_roots": true,
-          "byte_count": 473443,
+          "byte_count": 473441,
           "shadow_dom_walked": true,
           "closed_shadow_probe": {
             "custom_element_count": 0,
@@ -60,7 +60,7 @@
           "has_possible_closed_shadow_roots": false
         }
       },
-      "content_len": 473308,
+      "content_len": 473306,
       "contains_shadowroot_template": true,
       "shadow_root_template_count": 2,
       "provenance_source": "keyword:Evaluate JavaScript (shadow walker)"
@@ -68,9 +68,9 @@
     "aria": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-26606cc22ef4/0003_aria.yaml",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-5e0f1913a278/0003_aria.yaml",
         "bytes": 19499,
-        "sha256": "01cbf77e6fdbf3e1483a970e954bcad4a35be823e0f79ff92cc62b9e6c540ea8",
+        "sha256": "3219838df767ba686b25e1c2d10720c767a64cd87414b9e531202f954788c97e",
         "format": "yaml",
         "summary": {
           "node_count": 410,
@@ -89,6 +89,58 @@
           },
           "depth": 7,
           "byte_count": 19499,
+          "selector_hints": [
+            {
+              "role": "link",
+              "name": "Skip to content",
+              "locator": "role=link[name=\"Skip to content\"]"
+            },
+            {
+              "role": "link",
+              "name": "Get free access to our advanced XPath & CSS course. Ends in -",
+              "locator": "role=link[name=\"Get free access to our advanced XPath & CSS course. Ends in -\"]"
+            },
+            {
+              "role": "link",
+              "name": "Claim It Here",
+              "locator": "role=link[name=\"Claim It Here\"]"
+            },
+            {
+              "role": "button",
+              "name": "Open Products",
+              "locator": "role=button[name=\"Open Products\"]"
+            },
+            {
+              "role": "button",
+              "name": "Open Pro Plans",
+              "locator": "role=button[name=\"Open Pro Plans\"]"
+            },
+            {
+              "role": "link",
+              "name": "Courses",
+              "locator": "role=link[name=\"Courses\"]"
+            },
+            {
+              "role": "link",
+              "name": "Practice Page",
+              "locator": "role=link[name=\"Practice Page\"]"
+            },
+            {
+              "role": "button",
+              "name": "Open Resources",
+              "locator": "role=button[name=\"Open Resources\"]"
+            },
+            {
+              "role": "link",
+              "name": "Help?",
+              "locator": "role=link[name=\"Help?\"]"
+            },
+            {
+              "role": "link",
+              "name": "Find out how to automate these controls without XPath.",
+              "locator": "role=link[name=\"Find out how to automate these controls without XPath.\"]"
+            }
+          ],
           "selector": "css=html"
         }
       },
@@ -97,14 +149,14 @@
     "screenshot": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-26606cc22ef4/0004_screenshot.png",
-        "bytes": 74494,
-        "sha256": "8fc8d60fca972ad158a3fa3c9817d9ea9b65ef24d1423a94e5ba6ef0a61a6719",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/selectorshub/results/snapshots/session-5e0f1913a278/0004_screenshot.png",
+        "bytes": 74676,
+        "sha256": "f56696dd7f19e56d0b90eb1102d4fac2f473e1954115b0054826b19f758e0359",
         "format": "png",
         "summary": {
           "width": 1280,
           "height": 720,
-          "byte_count": 74494
+          "byte_count": 74676
         }
       },
       "content_returned_inline": false
@@ -112,7 +164,7 @@
   },
   "diagnostic_suggestion": {
     "error_code": "step-failed",
-    "suggested_next_step": "call app_inspect_state(session_id='session-26606cc22ef4', snapshot_kind='dom_selector', selector='#this-element-definitely-does-not-exist') to read the actual HTML at that locator, or snapshot_kind='aria' to see the page's semantic tree.",
+    "suggested_next_step": "call app_inspect_state(session_id='session-5e0f1913a278', snapshot_kind='dom_selector', selector='#this-element-definitely-does-not-exist') to read the actual HTML at that locator, or snapshot_kind='aria' to see the page's semantic tree.",
     "mentions_app_inspect_state": true,
     "carries_locator": true
   }

@@ -56,12 +56,23 @@ def _split_cells(instruction: str) -> list[str]:
     return [c for c in re.split(r"  +|\t+", stripped) if c]
 
 
-def _diagnostic_next_step(instruction: str, libraries: list[str], session_id: str) -> str:
+def _diagnostic_next_step(
+    instruction: str,
+    libraries: list[str],
+    session_id: str,
+    *,
+    has_possible_closed_shadow_roots: bool = False,
+    possible_closed_shadow_root_count: int = 0,
+) -> str:
     """Build an actionable suggested_next_step for a failed Browser/Selenium step.
 
     Returns a concrete app_inspect_state call when a Browser-family library is
     loaded — preferring dom_selector with the failing locator when one is
     parseable, falling back to aria for "what's on the page?" inspections.
+    When the session has already observed possibly-closed shadow roots, the
+    dom_selector hint is **replaced** with a hard advisory pointing at ARIA
+    (closed shadow content is inaccessible by the platform contract — re-trying
+    dom_selector is wasted calls). This is cross-review proposal #1.
     Returns a generic guidance string otherwise.
     """
 
@@ -74,6 +85,29 @@ def _diagnostic_next_step(instruction: str, libraries: list[str], session_id: st
 
     cells = _split_cells(instruction)
     locator = next((cell for cell in cells[1:] if _looks_like_locator(cell)), None)
+
+    if has_possible_closed_shadow_roots:
+        # Closed shadow content is inaccessible by the platform contract — do
+        # not loop on dom_selector. Point at ARIA, which Playwright walks
+        # natively across open shadow + iframe boundaries, and warn loudly so
+        # the agent stops trying flat CSS selectors that cannot match.
+        suffix = (
+            f" The session has observed {possible_closed_shadow_root_count} "
+            "custom element(s) whose shadowRoot is null (likely closed shadow); "
+            "dom_selector cannot reach inside closed shadow roots — switch strategy."
+        )
+        if locator:
+            safe = locator.replace("'", "\\'")
+            return (
+                f"call app_inspect_state(session_id='{session_id}', snapshot_kind='aria') "
+                f"to inspect the page's semantic tree -- the selector '{safe}' may point at "
+                "content inside a closed shadow root that no selector can match."
+                + suffix
+            )
+        return (
+            f"call app_inspect_state(session_id='{session_id}', snapshot_kind='aria') to "
+            "inspect the page's semantic tree." + suffix
+        )
 
     if locator:
         # Escape single quotes for inclusion in the suggested call string.
@@ -183,7 +217,11 @@ class LiveStepper:
                 provenance=ProvenanceRecord(kind=ProvenanceKind.OBSERVED, source="live-execution"),
                 retryable=True,
                 suggested_next_step=_diagnostic_next_step(
-                    instruction, loaded_libraries, session_id
+                    instruction,
+                    loaded_libraries,
+                    session_id,
+                    has_possible_closed_shadow_roots=record.has_possible_closed_shadow_roots,
+                    possible_closed_shadow_root_count=record.possible_closed_shadow_root_count,
                 ),
                 details={
                     "session_id": session_id,

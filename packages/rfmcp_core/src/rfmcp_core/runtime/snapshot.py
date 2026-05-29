@@ -375,6 +375,46 @@ def _capture_dom_selector(engine: Any, session_id: str, kind: SnapshotKind, sele
 
 _ARIA_ROLE_RE = re.compile(r"^\s*-\s*([\w-]+)\b", re.MULTILINE)
 
+# Interactive ARIA nodes with a name: "  - textbox \"Origin\":" → ("textbox", "Origin").
+# Limited to roles an agent is most likely to drive; ignores chrome (banner, navigation,
+# main, list, listitem, text, paragraph, heading) which rarely need direct interaction.
+_ARIA_INTERACTIVE_NAMED_RE = re.compile(
+    r"^\s*-\s*(textbox|button|combobox|checkbox|radio|tab|switch|menuitem|link|"
+    r"spinbutton|searchbox|slider|option)\s+\"([^\"]+)\"",
+    re.MULTILINE,
+)
+
+
+def _aria_selector_hints(yaml_text: str, *, limit: int = 10) -> list[dict[str, str]]:
+    """Extract the first N labeled interactive elements as ready-to-paste Playwright
+    role locators. Cross-review proposal #4.
+
+    Each hint is ``{"role": "textbox", "name": "Origin", "locator":
+    "role=textbox[name=\"Origin\"]"}`` — the locator drops straight into Browser
+    Library keywords (Fill Text, Click, Get Text, ...). Limited to ``limit``
+    entries so the manifest summary stays small.
+    """
+
+    hints: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for role, name in _ARIA_INTERACTIVE_NAMED_RE.findall(yaml_text):
+        key = (role.lower(), name.strip())
+        if not key[1] or key in seen:
+            continue
+        seen.add(key)
+        escaped_name = name.replace('"', '\\"')
+        hints.append(
+            {
+                "role": role.lower(),
+                "name": name.strip(),
+                # Browser Library passes this verbatim to Playwright.
+                "locator": f'role={role.lower()}[name="{escaped_name}"]',
+            }
+        )
+        if len(hints) >= limit:
+            break
+    return hints
+
 
 def _aria_summary(yaml_text: str) -> dict[str, Any]:
     roles = _ARIA_ROLE_RE.findall(yaml_text)
@@ -394,7 +434,27 @@ def _aria_summary(yaml_text: str) -> dict[str, Any]:
         "top_roles": top_roles,
         "depth": max_depth,
         "byte_count": len(yaml_text.encode("utf-8")),
+        # Top labeled interactive elements as ready-to-paste Playwright role locators
+        # (cross-review proposal #4). Bounded list so the summary stays cheap.
+        "selector_hints": _aria_selector_hints(yaml_text),
     }
+
+
+def _annotate_aria_for_closed_shadow(summary: dict[str, Any], record) -> None:
+    """If the session has seen possibly-closed shadow roots, mark the ARIA selector
+    hints as potentially incomplete (Playwright's accessibility tree, like the
+    walker, cannot enter closed roots — interactive elements inside them won't
+    appear here). Cross-review proposal #4's guard.
+    """
+
+    if getattr(record, "has_possible_closed_shadow_roots", False):
+        summary["closed_shadow_advisory"] = (
+            f"selector_hints may be incomplete: this session has observed "
+            f"{record.possible_closed_shadow_root_count} custom element(s) with "
+            "null shadowRoot (likely closed). Closed shadow content is not visible "
+            "to ARIA, the shadow walker, or any selector. Consider screenshot or "
+            "CDP for visual verification."
+        )
 
 
 def _capture_aria(engine: Any, session_id: str, kind: SnapshotKind, selector: str | None) -> tuple[Path, int, str, dict[str, Any], str, str]:
@@ -605,6 +665,17 @@ def capture_inspection_snapshot(
             path, byte_count, sha, summary, payload, keyword = _capture_dom(
                 engine, session_id, kind, include_shadow_dom=include_shadow_dom
             )
+            # Promote the closed-shadow probe count to session-scoped state so
+            # the diagnostic helper and the next get-summary call can read it
+            # without re-running the probe (cross-review proposal #6).
+            probe = summary.get("closed_shadow_probe") or {}
+            if probe:
+                store.record_shadow_signal(
+                    session_id,
+                    possible_closed_count=int(
+                        probe.get("possible_closed_shadow_root_count", 0)
+                    ),
+                )
             source = f"keyword:{keyword}"
         elif kind == SnapshotKind.DOM_SELECTOR:
             path, byte_count, sha, summary, payload, keyword = _capture_dom_selector(
@@ -613,6 +684,9 @@ def capture_inspection_snapshot(
             source = f"keyword:{keyword}"
         elif kind == SnapshotKind.ARIA:
             path, byte_count, sha, summary, payload, keyword = _capture_aria(engine, session_id, kind, selector)
+            # Append the closed-shadow advisory to the ARIA summary when the
+            # session has observed inaccessible shadow content.
+            _annotate_aria_for_closed_shadow(summary, record)
             source = f"keyword:{keyword}"
         elif kind == SnapshotKind.SCREENSHOT:
             path, byte_count, sha, summary, payload, keyword = _capture_screenshot(engine, session_id, kind)

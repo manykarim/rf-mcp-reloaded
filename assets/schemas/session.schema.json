@@ -223,6 +223,11 @@
       "title": "Created At",
       "type": "string"
     },
+    "has_possible_closed_shadow_roots": {
+      "default": false,
+      "title": "Has Possible Closed Shadow Roots",
+      "type": "boolean"
+    },
     "http_host": {
       "anyOf": [
         {
@@ -245,6 +250,12 @@
         }
       ],
       "default": null
+    },
+    "possible_closed_shadow_root_count": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Possible Closed Shadow Root Count",
+      "type": "integer"
     },
     "session_id": {
       "minLength": 1,

@@ -142,6 +142,42 @@ the platform contract).
    labeled textboxes / buttons with their role-locator template would close
    most of the loop the dbschenker run exposed.
 
+## Cross-review outcome (claude + kilo CLIs)
+
+The six proposals above were sent to `claude -p` and `kilo run` for independent
+critique (codex CLI was rate-limited). Both reviews converged on the same
+verdicts:
+
+| Proposal | Both reviewers | Landed? |
+| --- | --- | --- |
+| #1 closed-shadow-aware suggestion | LAND | ✅ landed |
+| #2 shadow-piercing helper | REFINE (gate on `has_possible_closed_shadow_roots=False`) | ⏳ deferred — needs #6 first; ready when wanted |
+| #3 consent-banner pattern library | SKIP — Usercentrics itself uses shadow, pattern list won't match | ❌ skipped |
+| #4 ARIA-derived selector hints | LAND with guard | ✅ landed (with `closed_shadow_advisory`) |
+| #5 wait-for-state in batched setup | SKIP code, document as guidance | ❌ skipped (covered by skill README) |
+| #6 session-level closed-shadow signal | LAND (enables #1) | ✅ landed |
+
+The implementation collapsed #1 + #6 into a single coherent wire: the DOM
+probe writes the count to the session record; `_diagnostic_next_step` reads
+it and rewrites its suggestion when the signal fires. #4 added a
+`closed_shadow_advisory` field to the ARIA summary when the session has
+observed inaccessible shadow content — the guard the reviewers requested.
+
+Live re-run after the change:
+
+**DB Schenker, second probe attempt against the cookie banner:**
+
+> *call app_inspect_state(session_id='…', snapshot_kind='aria') to inspect
+> the page's semantic tree — the selector `[data-test-id="uc-accept-all-button"]`
+> may point at content inside a closed shadow root that no selector can match.
+> The session has observed 13 custom element(s) whose shadowRoot is null
+> (likely closed shadow); dom_selector cannot reach inside closed shadow
+> roots — switch strategy.*
+
+And the ARIA summary now carries 10 ready-to-paste `role=…[name=…]` locators
+plus the advisory that they may miss shadow-rooted form fields. Selectorshub
+runs unchanged — the closed-shadow path stays dormant when not warranted.
+
 ## Reproduce
 
 ```bash

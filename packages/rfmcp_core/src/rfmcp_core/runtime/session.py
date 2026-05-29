@@ -42,6 +42,12 @@ class LiveSessionRecord:
     test_case_setup: str | None = None
     test_case_teardown: str | None = None
     test_case_tags: list[str] = field(default_factory=list)
+    # Snapshot-derived signal: True once any DOM capture probed at least one
+    # custom element whose shadowRoot was null. Lets agents adopt ARIA-first
+    # before the first dead-end dom_selector call (proposals #1 + #6 from the
+    # cross-review). The count is the most recent probe's value.
+    has_possible_closed_shadow_roots: bool = False
+    possible_closed_shadow_root_count: int = 0
     # Runtime-only handle to the live RF execution engine (never serialized).
     engine: Any = field(default=None, repr=False, compare=False)
 
@@ -53,6 +59,8 @@ class LiveSessionRecord:
             created_at=self.created_at,
             step_count=self.step_count,
             version=self.version,
+            has_possible_closed_shadow_roots=self.has_possible_closed_shadow_roots,
+            possible_closed_shadow_root_count=self.possible_closed_shadow_root_count,
             attach_requested=self.attach_requested,
             http_host=self.http_host,
             attach_host=self.attach_host,
@@ -232,6 +240,31 @@ class LiveSessionStore:
             if record is None:
                 return None
             setattr(record, field_name, list(tags))
+            record.bump_version()
+            return record.to_summary()
+
+    def record_shadow_signal(
+        self, session_id: str, *, possible_closed_count: int
+    ) -> SessionSummary | None:
+        """Persist the most recent closed-shadow-root probe count on the session.
+
+        Lets ``_diagnostic_next_step`` and the agent surface the signal without
+        re-running the DOM probe on every step. Bumps version so delta-get
+        callers see the signal change.
+        """
+        with self._lock:
+            record = self._sessions.get(session_id)
+            if record is None:
+                return None
+            count = max(0, int(possible_closed_count))
+            if (
+                record.possible_closed_shadow_root_count == count
+                and record.has_possible_closed_shadow_roots == (count > 0)
+            ):
+                # No-op; don't bump version for a duplicate observation.
+                return record.to_summary()
+            record.possible_closed_shadow_root_count = count
+            record.has_possible_closed_shadow_roots = count > 0
             record.bump_version()
             return record.to_summary()
 

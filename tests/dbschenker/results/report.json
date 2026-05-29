@@ -1,20 +1,20 @@
 {
   "target": "https://www.dbschenker.com/global/business/services/book-and-track",
-  "executed_at": "2026-05-29T10:25:15.124456+00:00",
-  "session_id": "session-e24fef78e669",
-  "duration_seconds": 127.77,
+  "executed_at": "2026-05-29T10:40:16.038878+00:00",
+  "session_id": "session-b2f0bf636a32",
+  "duration_seconds": 128.05,
   "batch": {
     "step_count": 7,
     "executed": 7,
     "ok": true,
-    "elapsed_seconds": 6.97,
+    "elapsed_seconds": 7.15,
     "failed_index": null
   },
   "snapshots": {
     "dom_default": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-e24fef78e669/0001_dom.html",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-b2f0bf636a32/0001_dom.html",
         "bytes": 241776,
         "sha256": "9b6c7953b275e3eb5e6eb414d4394e19dfc0e47f281dcac7897c49717e1f3352",
         "format": "html",
@@ -37,7 +37,7 @@
     "dom_shadow_walked": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-e24fef78e669/0002_dom.html",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-b2f0bf636a32/0002_dom.html",
         "bytes": 250866,
         "sha256": "35fcf3ccf2a551c724f5f326ad812bdfd8493f1671bfa79a6a8e111e0f1a80d0",
         "format": "html",
@@ -62,7 +62,7 @@
     "aria": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-e24fef78e669/0003_aria.yaml",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-b2f0bf636a32/0003_aria.yaml",
         "bytes": 15513,
         "sha256": "81fdd39e2500ed3980d694d1d490088615a002d3cb5e3148f2a66a3af207080e",
         "format": "yaml",
@@ -83,7 +83,60 @@
           },
           "depth": 7,
           "byte_count": 15513,
-          "selector": "css=html"
+          "selector_hints": [
+            {
+              "role": "link",
+              "name": "Read more Read more",
+              "locator": "role=link[name=\"Read more Read more\"]"
+            },
+            {
+              "role": "link",
+              "name": "DB Schenker Logo",
+              "locator": "role=link[name=\"DB Schenker Logo\"]"
+            },
+            {
+              "role": "button",
+              "name": "Business",
+              "locator": "role=button[name=\"Business\"]"
+            },
+            {
+              "role": "button",
+              "name": "Careers",
+              "locator": "role=button[name=\"Careers\"]"
+            },
+            {
+              "role": "button",
+              "name": "Insights",
+              "locator": "role=button[name=\"Insights\"]"
+            },
+            {
+              "role": "button",
+              "name": "Open Search",
+              "locator": "role=button[name=\"Open Search\"]"
+            },
+            {
+              "role": "link",
+              "name": "Login",
+              "locator": "role=link[name=\"Login\"]"
+            },
+            {
+              "role": "button",
+              "name": "Global",
+              "locator": "role=button[name=\"Global\"]"
+            },
+            {
+              "role": "link",
+              "name": "Register now",
+              "locator": "role=link[name=\"Register now\"]"
+            },
+            {
+              "role": "button",
+              "name": "Select Location",
+              "locator": "role=button[name=\"Select Location\"]"
+            }
+          ],
+          "selector": "css=html",
+          "closed_shadow_advisory": "selector_hints may be incomplete: this session has observed 13 custom element(s) with null shadowRoot (likely closed). Closed shadow content is not visible to ARIA, the shadow walker, or any selector. Consider screenshot or CDP for visual verification."
         }
       },
       "automation_signal": {
@@ -97,7 +150,7 @@
     "screenshot": {
       "ok": true,
       "manifest": {
-        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-e24fef78e669/0004_screenshot.png",
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-b2f0bf636a32/0004_screenshot.png",
         "bytes": 189696,
         "sha256": "39c1220bdce62cb2f7318468c01dbbfb0df1c1b48917264614b6e0a2944ea7e1",
         "format": "png",
@@ -115,14 +168,14 @@
       "instruction": "Click    [data-test-id=\"uc-accept-all-button\"]",
       "ok": false,
       "error_code": "step-failed",
-      "suggested_next_step": "call app_inspect_state(session_id='session-e24fef78e669', snapshot_kind='dom_selector', selector='[data-test-id=\"uc-accept-all-button\"]') to read the actual HTML at that locator, or snapshot_kind='aria' to see the page's semantic tree."
+      "suggested_next_step": "call app_inspect_state(session_id='session-b2f0bf636a32', snapshot_kind='aria') to inspect the page's semantic tree -- the selector '[data-test-id=\"uc-accept-all-button\"]' may point at content inside a closed shadow root that no selector can match. The session has observed 13 custom element(s) whose shadowRoot is null (likely closed shadow); dom_selector cannot reach inside closed shadow roots \u2014 switch strategy."
     },
     {
       "description": "dismiss cookie banner (alternative)",
       "instruction": "Click    text=Accept All",
       "ok": false,
       "error_code": "step-failed",
-      "suggested_next_step": "call app_inspect_state(session_id='session-e24fef78e669', snapshot_kind='dom_selector', selector='text=Accept All') to read the actual HTML at that locator, or snapshot_kind='aria' to see the page's semantic tree."
+      "suggested_next_step": "call app_inspect_state(session_id='session-b2f0bf636a32', snapshot_kind='aria') to inspect the page's semantic tree -- the selector 'text=Accept All' may point at content inside a closed shadow root that no selector can match. The session has observed 13 custom element(s) whose shadowRoot is null (likely closed shadow); dom_selector cannot reach inside closed shadow roots \u2014 switch strategy."
     }
   ]
 }

@@ -469,6 +469,12 @@ class SessionSummary(BaseModel):
     # tags / setups). Pass back to ``rf_session(action='get', since_version=...)`` to skip
     # the full summary when nothing changed.
     version: int = Field(default=0, ge=0)
+    # Snapshot-derived signal carried at session scope so agents can adopt an ARIA-first
+    # strategy proactively on heavy-shadow pages, before sinking calls into selectors that
+    # cannot match. Updated by ``app_inspect_state(snapshot_kind='dom')`` whenever the
+    # closed-shadow probe runs successfully.
+    has_possible_closed_shadow_roots: bool = False
+    possible_closed_shadow_root_count: int = Field(default=0, ge=0)
     attach_requested: bool = False
     http_host: str | None = None
     # Loopback attach bridge target + the per-session ephemeral token the operator
