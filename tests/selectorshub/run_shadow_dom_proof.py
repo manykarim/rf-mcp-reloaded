@@ -1,20 +1,21 @@
-"""Live Shadow-DOM proof against https://selectorshub.com/xpath-practice-page/.
+"""Live proof against https://selectorshub.com/xpath-practice-page/.
 
-Drives a real in-process Browser Library session through the MCP tool surface and
-compares three `app_inspect_state` modes on a page known to use both regular DOM
-and shadow DOM nodes (the "Shadow DOM" section + the nested-shadow practice
-controls on selectorshub.com's XPath practice page):
+Drives a real in-process Browser Library session through the MCP tool surface
+and proves four things end-to-end against a page that uses both regular DOM
+and shadow DOM nodes:
 
-- ``snapshot_kind='dom'`` (default): regular Get Page Source — shadow content NOT
-  serialized.
-- ``snapshot_kind='dom', include_shadow_dom=True``: walks open shadow roots via
-  ``Evaluate JavaScript`` and emits declarative ``<template shadowrootmode="open">``.
-- ``snapshot_kind='aria'``: Playwright-native ARIA snapshot, which traverses Shadow
-  DOM + iframes natively.
+1. Batched setup via ``rf_execute_step(instructions=[...])`` returns ONE
+   aggregated response with a single session summary.
+2. ``snapshot_kind='dom'`` (default) vs ``include_shadow_dom=True``: only the
+   walker exposes shadow content as declarative ``<template shadowrootmode="open">``.
+3. ``snapshot_kind='aria'`` walks Shadow DOM + iframes natively via Playwright.
+4. The DOM summary's ``closed_shadow_probe`` flags custom elements whose
+   shadowRoot is null (a strong hint that the page hosts content the toolset
+   cannot enter).
 
-The script asserts that the shadow-DOM-walked HTML contains the markers that
-the regular ``Get Page Source`` cannot expose, and writes a small JSON report
-under ``tests/selectorshub/results/`` for the record.
+Also confirms that ``rf_execute_step`` with a bad locator returns a
+``step-failed`` envelope whose ``suggested_next_step`` carries a concrete
+``app_inspect_state`` call.
 
 Run: ``uv run --group web python tests/selectorshub/run_shadow_dom_proof.py``
 """
@@ -54,7 +55,6 @@ SETUP_STEPS = [
     "New Context",
     "New Page",
     f"Go To    {TARGET_URL}    wait_until=domcontentloaded",
-    # selectorshub renders shadow widgets after DOMContentLoaded; allow them to mount.
     "Sleep    2s",
 ]
 
@@ -74,23 +74,22 @@ def run() -> dict:
     session_id = opened["session"]["session_id"]
     print(f"[rf_session.open] session_id={session_id}")
 
-    failures: list[dict] = []
-    for index, instruction in enumerate(SETUP_STEPS, start=1):
-        t0 = time.time()
-        result = execute_step(session_id, instruction)
-        dt = round(time.time() - t0, 2)
-        ok = bool(result.get("ok"))
-        print(f"  [{index:02d}] {'OK ' if ok else 'FAIL'} ({dt:>5.2f}s) {instruction[:70]}")
-        if not ok:
-            failures.append({"step": instruction, "error": result.get("error", {})})
-            break
+    # ---- batched setup ----------------------------------------------------
+    batch_start = time.time()
+    batch = execute_step(session_id=session_id, instructions=SETUP_STEPS)
+    batch_elapsed = round(time.time() - batch_start, 2)
+    print(f"[rf_execute_step batch] {len(SETUP_STEPS)} steps in {batch_elapsed:.2f}s, ok={batch['ok']}, executed={batch['executed']}")
+    for entry in batch["results"]:
+        flag = "OK " if entry["ok"] else "FAIL"
+        print(f"  [{entry['step_index']:02d}] {flag} {entry['instruction'][:65]}")
 
     snapshot_results: dict = {}
-    if not failures:
-        # 1. Regular DOM snapshot — shadow content NOT expected.
+    diagnostic_suggestion = None
+    if batch["ok"]:
+        # --- dom default ---
         plain = inspect(
             session_id=session_id, snapshot_kind=SnapshotKind.DOM, return_inline=True,
-            inline_max_bytes=4 * 1024 * 1024,  # let everything through for inspection
+            inline_max_bytes=4 * 1024 * 1024,
         )
         snapshot_results["dom_default"] = {
             "ok": plain["ok"],
@@ -99,7 +98,7 @@ def run() -> dict:
             "contains_shadowroot_template": "shadowrootmode" in (plain.get("snapshot", {}).get("content") or ""),
         }
 
-        # 2. DOM snapshot with shadow walker.
+        # --- dom with shadow walker ---
         walked = inspect(
             session_id=session_id,
             snapshot_kind=SnapshotKind.DOM,
@@ -115,10 +114,9 @@ def run() -> dict:
             "contains_shadowroot_template": "shadowrootmode" in walked_content,
             "shadow_root_template_count": walked_content.count('shadowrootmode="open"'),
             "provenance_source": walked.get("snapshot", {}).get("provenance", {}).get("source"),
-            "error": walked.get("error"),
         }
 
-        # 3. ARIA snapshot — Playwright natively walks shadow + iframes.
+        # --- aria ---
         aria = inspect(
             session_id=session_id,
             snapshot_kind=SnapshotKind.ARIA,
@@ -131,13 +129,26 @@ def run() -> dict:
             "content_len": len(aria.get("snapshot", {}).get("content") or ""),
         }
 
-        # 4. Screenshot — file-first, never inlined.
+        # --- screenshot ---
         screenshot = inspect(session_id=session_id, snapshot_kind=SnapshotKind.SCREENSHOT)
         snapshot_results["screenshot"] = {
             "ok": screenshot["ok"],
             "manifest": screenshot.get("snapshot", {}).get("manifest"),
             "content_returned_inline": screenshot.get("snapshot", {}).get("content") is not None,
         }
+
+        # --- diagnostic-suggestion probe: a step that should fail with a parseable locator ---
+        bad_step = execute_step(
+            session_id=session_id,
+            instruction="Click    #this-element-definitely-does-not-exist",
+        )
+        if bad_step.get("error", {}).get("code") == "step-failed":
+            diagnostic_suggestion = {
+                "error_code": bad_step["error"]["code"],
+                "suggested_next_step": bad_step["error"]["suggested_next_step"],
+                "mentions_app_inspect_state": "app_inspect_state" in bad_step["error"]["suggested_next_step"],
+                "carries_locator": "#this-element-definitely-does-not-exist" in bad_step["error"]["suggested_next_step"],
+            }
 
     session_tool(action=SessionAction.CLOSE, session_id=session_id)
 
@@ -147,23 +158,51 @@ def run() -> dict:
         "executed_at": datetime.now(timezone.utc).isoformat(),
         "session_id": session_id,
         "duration_seconds": duration,
-        "setup_failures": failures,
+        "batch": {
+            "step_count": len(SETUP_STEPS),
+            "executed": batch["executed"],
+            "ok": batch["ok"],
+            "elapsed_seconds": batch_elapsed,
+            "failed_index": batch["failed_index"],
+            "session_summary_returned_once": "session" in batch and isinstance(batch.get("session"), dict),
+        },
         "snapshots": snapshot_results,
+        "diagnostic_suggestion": diagnostic_suggestion,
     }
     report_path = RESULTS_DIR / "report.json"
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(f"\n[report] wrote {report_path.relative_to(REPO_ROOT)}")
 
-    # Hard assertions: shadow walker MUST expose markers absent from default DOM.
+    # ---- assertions -------------------------------------------------------
+    walked_summary = (snapshot_results.get("dom_shadow_walked") or {}).get("manifest", {}).get("summary") or {}
+    probe = walked_summary.get("closed_shadow_probe") or {}
+    # The probe is correct when it returns a dict with all four reportable counts,
+    # whether or not the specific page contains closed roots (selectorshub uses
+    # only open shadow attached to plain <div> elements).
+    probe_ran = isinstance(probe, dict) and {
+        "custom_element_count",
+        "open_shadow_root_count",
+        "possible_closed_shadow_root_count",
+        "total_open_shadow_roots",
+    }.issubset(probe.keys())
     proven = bool(
-        snapshot_results
+        batch["ok"]
+        and snapshot_results
         and not snapshot_results["dom_default"]["contains_shadowroot_template"]
         and snapshot_results["dom_shadow_walked"]["contains_shadowroot_template"]
         and snapshot_results["dom_shadow_walked"]["shadow_root_template_count"] > 0
         and snapshot_results["aria"]["ok"]
         and snapshot_results["screenshot"]["ok"]
+        and probe_ran
+        and diagnostic_suggestion is not None
+        and diagnostic_suggestion["mentions_app_inspect_state"]
+        and diagnostic_suggestion["carries_locator"]
     )
-    print(f"\nShadow-DOM walker proof: {'PASS' if proven else 'FAIL'}")
+    print()
+    print(f"  closed_shadow_probe: {probe}")
+    if diagnostic_suggestion:
+        print(f"  step-failed suggestion: {diagnostic_suggestion['suggested_next_step'][:140]}")
+    print(f"\nLive proof: {'PASS' if proven else 'FAIL'}")
     return {"proven": proven, "report": report}
 
 

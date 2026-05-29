@@ -1,0 +1,128 @@
+{
+  "target": "https://www.dbschenker.com/global/business/services/book-and-track",
+  "executed_at": "2026-05-29T10:25:15.124456+00:00",
+  "session_id": "session-e24fef78e669",
+  "duration_seconds": 127.77,
+  "batch": {
+    "step_count": 7,
+    "executed": 7,
+    "ok": true,
+    "elapsed_seconds": 6.97,
+    "failed_index": null
+  },
+  "snapshots": {
+    "dom_default": {
+      "ok": true,
+      "manifest": {
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-e24fef78e669/0001_dom.html",
+        "bytes": 241776,
+        "sha256": "9b6c7953b275e3eb5e6eb414d4394e19dfc0e47f281dcac7897c49717e1f3352",
+        "format": "html",
+        "summary": {
+          "title": "Book shipments online | DB SCHENKER",
+          "iframe_count": 1,
+          "interactive_count": 337,
+          "has_declarative_shadow_roots": false,
+          "byte_count": 241776,
+          "closed_shadow_probe": {
+            "custom_element_count": 14,
+            "open_shadow_root_count": 1,
+            "possible_closed_shadow_root_count": 13,
+            "total_open_shadow_roots": 1
+          },
+          "has_possible_closed_shadow_roots": true
+        }
+      }
+    },
+    "dom_shadow_walked": {
+      "ok": true,
+      "manifest": {
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-e24fef78e669/0002_dom.html",
+        "bytes": 250866,
+        "sha256": "35fcf3ccf2a551c724f5f326ad812bdfd8493f1671bfa79a6a8e111e0f1a80d0",
+        "format": "html",
+        "summary": {
+          "title": "Book shipments online | DB SCHENKER",
+          "iframe_count": 1,
+          "interactive_count": 348,
+          "has_declarative_shadow_roots": true,
+          "byte_count": 250866,
+          "shadow_dom_walked": true,
+          "closed_shadow_probe": {
+            "custom_element_count": 14,
+            "open_shadow_root_count": 1,
+            "possible_closed_shadow_root_count": 13,
+            "total_open_shadow_roots": 1
+          },
+          "has_possible_closed_shadow_roots": true
+        }
+      },
+      "shadow_root_template_count": 5
+    },
+    "aria": {
+      "ok": true,
+      "manifest": {
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-e24fef78e669/0003_aria.yaml",
+        "bytes": 15513,
+        "sha256": "81fdd39e2500ed3980d694d1d490088615a002d3cb5e3148f2a66a3af207080e",
+        "format": "yaml",
+        "summary": {
+          "node_count": 324,
+          "distinct_roles": 26,
+          "top_roles": {
+            "listitem": 61,
+            "text": 53,
+            "img": 48,
+            "link": 39,
+            "heading": 22,
+            "paragraph": 20,
+            "button": 16,
+            "list": 15,
+            "checkbox": 15,
+            "tab": 6
+          },
+          "depth": 7,
+          "byte_count": 15513,
+          "selector": "css=html"
+        }
+      },
+      "automation_signal": {
+        "textbox_count": 3,
+        "button_count": 16,
+        "combobox_count": 0,
+        "form_field_total": 3,
+        "has_origin_destination_hint": true
+      }
+    },
+    "screenshot": {
+      "ok": true,
+      "manifest": {
+        "path": "/home/many/workspace/rfmcp-reloaded/tests/dbschenker/results/snapshots/session-e24fef78e669/0004_screenshot.png",
+        "bytes": 189696,
+        "sha256": "39c1220bdce62cb2f7318468c01dbbfb0df1c1b48917264614b6e0a2944ea7e1",
+        "format": "png",
+        "summary": {
+          "width": 1440,
+          "height": 900,
+          "byte_count": 189696
+        }
+      }
+    }
+  },
+  "interactions": [
+    {
+      "description": "dismiss cookie banner if present",
+      "instruction": "Click    [data-test-id=\"uc-accept-all-button\"]",
+      "ok": false,
+      "error_code": "step-failed",
+      "suggested_next_step": "call app_inspect_state(session_id='session-e24fef78e669', snapshot_kind='dom_selector', selector='[data-test-id=\"uc-accept-all-button\"]') to read the actual HTML at that locator, or snapshot_kind='aria' to see the page's semantic tree."
+    },
+    {
+      "description": "dismiss cookie banner (alternative)",
+      "instruction": "Click    text=Accept All",
+      "ok": false,
+      "error_code": "step-failed",
+      "suggested_next_step": "call app_inspect_state(session_id='session-e24fef78e669', snapshot_kind='dom_selector', selector='text=Accept All') to read the actual HTML at that locator, or snapshot_kind='aria' to see the page's semantic tree."
+    }
+  ]
+}

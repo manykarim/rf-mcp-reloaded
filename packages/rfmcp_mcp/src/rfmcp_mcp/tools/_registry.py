@@ -37,11 +37,14 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
     ToolDefinition(
         name="rf_execute_step",
         description=(
-            "Execute one bounded Robot Framework keyword step within the active live session, "
-            "preserving variables, imports, and library state between calls."
+            "Execute one (instruction='...') or many (instructions=[...]) Robot Framework "
+            "keyword steps within the active live session, preserving variables, imports, "
+            "and library state between calls. Batched mode returns the session summary once "
+            "instead of once per step. On step-failed, suggested_next_step is concrete and "
+            "points at app_inspect_state when a Browser/Selenium library is loaded."
         ),
         live_state_justification=(
-            "Runs a real keyword and updates live context across steps, which CLI workflows cannot preserve."
+            "Runs real keywords and updates live context across steps, which CLI workflows cannot preserve."
         ),
         factory=build_execute_step_tool,
     ),

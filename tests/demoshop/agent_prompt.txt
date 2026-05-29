@@ -11,7 +11,7 @@ Scenario — target site https://demoshop.makrocode.de/ (a shop called "Flowline
 
 How to work:
 1. Open a live session with rf_session(action="open"). Capture the returned session_id.
-2. Execute ONE Robot Framework keyword per step via rf_execute_step(session_id, instruction). Begin with these setup steps (in order):
+2. Run setup as ONE batched call: rf_execute_step(session_id, instructions=[...]) — this returns the session summary once instead of once per step. Begin with these setup steps (in order):
    - Import Library    Browser
    - New Browser    chromium    headless=True
    - Set Browser Timeout    60s

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T08:46:32.915629+00:00",
+  "generated_at": "2026-05-29T10:21:47.100472+00:00",
   "delta": {
     "scenario": "polling loop, session unchanged",
     "iterations": 10,
@@ -51,6 +51,38 @@
       "summary_only_tokens": 231,
       "manifest_vs_inline_savings_pct": 99.8,
       "summary_vs_inline_savings_pct": 99.8
+    }
+  ],
+  "batching": [
+    {
+      "step_count": 3,
+      "sequential_bytes": 1314,
+      "batched_bytes": 788,
+      "sequential_tokens": 328,
+      "batched_tokens": 197,
+      "savings_pct": 40.0,
+      "per_step_overhead_sequential": 438.0,
+      "per_step_overhead_batched": 262.7
+    },
+    {
+      "step_count": 7,
+      "sequential_bytes": 3066,
+      "batched_bytes": 1360,
+      "sequential_tokens": 766,
+      "batched_tokens": 340,
+      "savings_pct": 55.6,
+      "per_step_overhead_sequential": 438.0,
+      "per_step_overhead_batched": 194.3
+    },
+    {
+      "step_count": 15,
+      "sequential_bytes": 6588,
+      "batched_bytes": 2513,
+      "sequential_tokens": 1647,
+      "batched_tokens": 628,
+      "savings_pct": 61.9,
+      "per_step_overhead_sequential": 439.2,
+      "per_step_overhead_batched": 167.5
     }
   ]
 }

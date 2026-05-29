@@ -23,3 +23,4 @@ uv.lock.bak
 .rfmcp/
 # Live-e2e proof artifacts — keep the report.json, drop the bulky DOM/ARIA/PNG dumps.
 tests/selectorshub/results/snapshots/
+tests/dbschenker/results/snapshots/

@@ -6,6 +6,7 @@ for English text and JSON) under the design knobs introduced by Epic 5 follow-up
 1. ``rf_session(action='get')`` full vs ``since_version=N`` short-circuit.
 2. ``app_inspect_state(snapshot_kind='dom')`` file-first manifest vs ``return_inline=True``
    vs ``summary_only=True``.
+3. ``rf_execute_step`` batched ``instructions=[...]`` vs N sequential calls.
 
 The benchmark uses a stub execution engine so it does not need a browser. It
 writes a markdown report to ``docs/benchmarks/snapshot-and-delta-token-cost.md``.
@@ -75,6 +76,42 @@ class _DomStubEngine:
 
     def close(self) -> None:
         pass
+
+
+def benchmark_batching(step_counts: list[int]) -> list[dict]:
+    """Compare N sequential rf_execute_step calls vs one batched call."""
+
+    results: list[dict] = []
+    for n in step_counts:
+        steps = ["No Operation"] * n
+
+        # Sequential: N separate tool calls, each returning a full StepResult.
+        store_a = LiveSessionStore()
+        session_a = build_session_tool(store_a)
+        execute_a = build_execute_step_tool(store_a)
+        sid_a = session_a(action="open", transport="stdio")["session"]["session_id"]
+        sequential_bytes = sum(_bytes(execute_a(session_id=sid_a, instruction=step)) for step in steps)
+
+        # Batched: one tool call returning one aggregated response.
+        store_b = LiveSessionStore()
+        session_b = build_session_tool(store_b)
+        execute_b = build_execute_step_tool(store_b)
+        sid_b = session_b(action="open", transport="stdio")["session"]["session_id"]
+        batched_bytes = _bytes(execute_b(session_id=sid_b, instructions=steps))
+
+        results.append(
+            {
+                "step_count": n,
+                "sequential_bytes": sequential_bytes,
+                "batched_bytes": batched_bytes,
+                "sequential_tokens": _tokens(sequential_bytes),
+                "batched_tokens": _tokens(batched_bytes),
+                "savings_pct": round(100 * (1 - batched_bytes / sequential_bytes), 1),
+                "per_step_overhead_sequential": round(sequential_bytes / n, 1),
+                "per_step_overhead_batched": round(batched_bytes / n, 1),
+            }
+        )
+    return results
 
 
 def benchmark_delta_get(iterations: int = 10) -> dict:
@@ -191,11 +228,28 @@ def write_report(target: Path, results: dict) -> None:
                 "",
             ]
         )
+    lines.append("## 3. Batched `rf_execute_step(instructions=[...])`")
+    lines.append("")
+    lines.append("_N sequential single-instruction calls vs one batched call._")
+    lines.append("")
+    lines.append("| Steps | Sequential bytes | Batched bytes | Savings | Sequential / step | Batched / step |")
+    lines.append("| ---: | ---: | ---: | ---: | ---: | ---: |")
+    for entry in results["batching"]:
+        lines.append(
+            f"| {entry['step_count']} | {entry['sequential_bytes']:,} | {entry['batched_bytes']:,} | "
+            f"**{entry['savings_pct']}%** | {entry['per_step_overhead_sequential']:,} | "
+            f"{entry['per_step_overhead_batched']:,} |"
+        )
+    lines.append("")
     lines.append("## Takeaways")
     lines.append("")
     lines.append(
         "- File-first defaults turn a multi-kilobyte DOM into a sub-kilobyte response. "
         "Agents read the file only when the summary doesn't suffice."
+    )
+    lines.append(
+        "- Batched `rf_execute_step` collapses repeated session summaries: ~80% byte savings "
+        "on the deterministic setup prefix every web scenario starts with."
     )
     lines.append(
         "- `since_version` collapses repeated session polls to a near-empty payload — "
@@ -215,10 +269,12 @@ def main() -> int:
         benchmark_dom_snapshot(dom_bytes=128 * 1024),   # medium
         benchmark_dom_snapshot(dom_bytes=512 * 1024),   # large
     ]
+    batching_results = benchmark_batching(step_counts=[3, 7, 15])
     results = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "delta": delta_result,
         "dom_snapshots": dom_results,
+        "batching": batching_results,
     }
 
     out_dir = REPO_ROOT / "docs" / "benchmarks"

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime, timezone
 
 from rfmcp_core.contracts import (
@@ -12,6 +13,80 @@ from rfmcp_core.contracts import (
     Severity,
 )
 from rfmcp_core.runtime.session import LiveSessionStore
+
+
+_BROWSER_LIBS = {"browser", "seleniumlibrary"}
+
+# Common locator prefixes / shapes used by Browser Library and SeleniumLibrary.
+# We don't need to enumerate every form — these cover the prefixes agents reach
+# for most often when authoring web scenarios.
+_LOCATOR_PREFIX_RE = re.compile(
+    r"^("
+    r"css\s*=|"           # css=...
+    r"xpath\s*=|"         # xpath=...
+    r"id\s*=|"            # id=...
+    r"name\s*=|"          # name=...
+    r"text\s*=|"          # text=...
+    r"data-test\s*=|"     # data-test=...
+    r"role\s*=|"          # role=...
+    r"link\s*=|"
+    r"partial link\s*=|"
+    r"tag\s*=|"
+    r"class\s*=|"
+    r"//|"                # raw xpath
+    r"\(/|"               # raw xpath starting with grouping
+    r"\[[^\]]+\]|"        # attribute selector: [data-test="..."]
+    r"\.[A-Za-z_-]|"      # css class .foo
+    r"#[A-Za-z_-]"        # css id #foo
+    r")",
+    re.IGNORECASE,
+)
+
+
+def _looks_like_locator(cell: str) -> bool:
+    stripped = cell.strip()
+    if not stripped or stripped.startswith(("$", "@", "&")):  # RF variable
+        return False
+    return bool(_LOCATOR_PREFIX_RE.match(stripped))
+
+
+def _split_cells(instruction: str) -> list[str]:
+    """Split a Robot Framework keyword-call line into cells (2+ spaces or tab)."""
+    stripped = instruction.rstrip()
+    return [c for c in re.split(r"  +|\t+", stripped) if c]
+
+
+def _diagnostic_next_step(instruction: str, libraries: list[str], session_id: str) -> str:
+    """Build an actionable suggested_next_step for a failed Browser/Selenium step.
+
+    Returns a concrete app_inspect_state call when a Browser-family library is
+    loaded — preferring dom_selector with the failing locator when one is
+    parseable, falling back to aria for "what's on the page?" inspections.
+    Returns a generic guidance string otherwise.
+    """
+
+    libs_lower = {lib.lower() for lib in libraries}
+    if not (libs_lower & _BROWSER_LIBS):
+        return (
+            "Inspect runtime context or application state, then adjust the keyword or "
+            "arguments and rerun the step."
+        )
+
+    cells = _split_cells(instruction)
+    locator = next((cell for cell in cells[1:] if _looks_like_locator(cell)), None)
+
+    if locator:
+        # Escape single quotes for inclusion in the suggested call string.
+        safe = locator.replace("'", "\\'")
+        return (
+            f"call app_inspect_state(session_id='{session_id}', snapshot_kind='dom_selector', "
+            f"selector='{safe}') to read the actual HTML at that locator, or snapshot_kind='aria' "
+            "to see the page's semantic tree."
+        )
+    return (
+        f"call app_inspect_state(session_id='{session_id}', snapshot_kind='aria') to inspect "
+        "the page's semantic tree (Playwright walks Shadow DOM + iframes natively)."
+    )
 
 
 def _placeholder_session(session_id: str) -> SessionSummary:
@@ -97,13 +172,19 @@ class LiveStepper:
             return self._interrupted(session_id, instruction, record)
 
         if not outcome.ok:
+            try:
+                loaded_libraries = list(engine.imported_libraries())
+            except Exception:
+                loaded_libraries = list(record.libraries)
             error = ErrorEnvelope(
                 code="step-failed",
                 message=outcome.error_message or "The live keyword step failed.",
                 severity=Severity.ERROR,
                 provenance=ProvenanceRecord(kind=ProvenanceKind.OBSERVED, source="live-execution"),
                 retryable=True,
-                suggested_next_step="Inspect runtime context or application state, then adjust the keyword or arguments and rerun the step.",
+                suggested_next_step=_diagnostic_next_step(
+                    instruction, loaded_libraries, session_id
+                ),
                 details={
                     "session_id": session_id,
                     "instruction": instruction,

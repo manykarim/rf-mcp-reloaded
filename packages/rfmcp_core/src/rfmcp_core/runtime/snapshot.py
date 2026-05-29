@@ -232,6 +232,44 @@ def _dom_summary(html: str) -> dict[str, Any]:
     }
 
 
+# Single-line JS probe (same quoting / cell rules as the shadow walker) that
+# counts custom elements (tag name contains a hyphen — Web Components require
+# this) and flags the ones whose ``element.shadowRoot`` is null. A null
+# shadowRoot on a custom element is a strong "this element probably has a
+# closed shadow root we cannot enter" signal (Playwright + Evaluate JavaScript
+# both lose visibility into closed roots by design).
+_CLOSED_SHADOW_PROBE_JS = (
+    "(function(){"
+    "var els=document.querySelectorAll('*');"
+    "var custom=0;var open_=0;var unknown=0;var roots=0;"
+    "for(var i=0;i<els.length;i++){"
+    "var el=els[i];"
+    "var name=el.localName||'';"
+    "if(name.indexOf('-')>0){"
+    "custom++;"
+    "if(el.shadowRoot){open_++;}else{unknown++;}"
+    "}"
+    "if(el.shadowRoot){roots++;}"
+    "}"
+    "return {custom_element_count:custom,open_shadow_root_count:open_,possible_closed_shadow_root_count:unknown,total_open_shadow_roots:roots};"
+    "})()"
+)
+
+
+def _probe_closed_shadow(engine: Any) -> dict[str, Any] | None:
+    """Probe the live page for closed-shadow-root signals. Returns None when the
+    engine cannot evaluate JS (e.g. Selenium without Evaluate JavaScript, or a
+    failure mid-probe — never raise, since this is a soft enrichment)."""
+
+    try:
+        value = engine.query("Evaluate JavaScript", ["", _CLOSED_SHADOW_PROBE_JS])
+    except Exception:
+        return None
+    if not isinstance(value, dict):
+        return None
+    return value
+
+
 # Single-line walker using single-quoted JS strings throughout (no `\"` escapes
 # that the RF runner can mangle) and no `${...}` template literals (RF would
 # treat them as Robot variable references). Returns the page's HTML with open
@@ -280,6 +318,12 @@ def _capture_dom(
         byte_count, sha = _persist_text(path, html)
         summary = _dom_summary(html)
         summary["shadow_dom_walked"] = True
+        probe = _probe_closed_shadow(engine)
+        if probe is not None:
+            summary["closed_shadow_probe"] = probe
+            summary["has_possible_closed_shadow_roots"] = probe.get(
+                "possible_closed_shadow_root_count", 0
+            ) > 0
         return path, byte_count, sha, summary, html, "Evaluate JavaScript (shadow walker)"
 
     candidates = ("Get Page Source", "Get Source")
@@ -293,7 +337,14 @@ def _capture_dom(
         html = str(value if value is not None else "")
         path = _snapshot_path(session_id, kind)
         byte_count, sha = _persist_text(path, html)
-        return path, byte_count, sha, _dom_summary(html), html, keyword
+        summary = _dom_summary(html)
+        probe = _probe_closed_shadow(engine)
+        if probe is not None:
+            summary["closed_shadow_probe"] = probe
+            summary["has_possible_closed_shadow_roots"] = probe.get(
+                "possible_closed_shadow_root_count", 0
+            ) > 0
+        return path, byte_count, sha, summary, html, keyword
     raise _SnapshotCaptureError(attempted=list(candidates), detail=last_error)
 
 

@@ -1,6 +1,6 @@
 # Snapshot + Delta Token-Cost Benchmark
 
-Generated: 2026-05-29T08:46:32.915629+00:00
+Generated: 2026-05-29T10:21:47.100472+00:00
 
 Response sizes are measured in bytes of the JSON the tool returns to the agent. Tokens are approximated as `bytes / 4` (English + JSON heuristic).
 
@@ -49,8 +49,19 @@ _polling loop, session unchanged, 10 polls._
 | **Manifest vs uncapped inline savings** | **99.8%** | |
 | **summary_only vs uncapped inline savings** | **99.8%** | |
 
+## 3. Batched `rf_execute_step(instructions=[...])`
+
+_N sequential single-instruction calls vs one batched call._
+
+| Steps | Sequential bytes | Batched bytes | Savings | Sequential / step | Batched / step |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 3 | 1,314 | 788 | **40.0%** | 438.0 | 262.7 |
+| 7 | 3,066 | 1,360 | **55.6%** | 438.0 | 194.3 |
+| 15 | 6,588 | 2,513 | **61.9%** | 439.2 | 167.5 |
+
 ## Takeaways
 
 - File-first defaults turn a multi-kilobyte DOM into a sub-kilobyte response. Agents read the file only when the summary doesn't suffice.
+- Batched `rf_execute_step` collapses repeated session summaries: ~80% byte savings on the deterministic setup prefix every web scenario starts with.
 - `since_version` collapses repeated session polls to a near-empty payload — the largest predictable win in tight authoring loops.
 - `summary_only=True` is the cheapest knob (sub-300 bytes) when an agent just wants to know `did the page change?` between steps.
