@@ -151,11 +151,26 @@ verdicts:
 | Proposal | Both reviewers | Landed? |
 | --- | --- | --- |
 | #1 closed-shadow-aware suggestion | LAND | ✅ landed |
-| #2 shadow-piercing helper | REFINE (gate on `has_possible_closed_shadow_roots=False`) | ⏳ deferred — needs #6 first; ready when wanted |
+| #2 shadow-piercing helper | REFINE (gate on `has_possible_closed_shadow_roots=False`) | ✅ landed (role-locator alternative from session-cached ARIA hints) |
 | #3 consent-banner pattern library | SKIP — Usercentrics itself uses shadow, pattern list won't match | ❌ skipped |
 | #4 ARIA-derived selector hints | LAND with guard | ✅ landed (with `closed_shadow_advisory`) |
 | #5 wait-for-state in batched setup | SKIP code, document as guidance | ❌ skipped (covered by skill README) |
 | #6 session-level closed-shadow signal | LAND (enables #1) | ✅ landed |
+
+**Proposal #2 implementation note (correcting the original proposal):** Browser
+Library uses Playwright, whose CSS selectors **already** pierce open shadow
+boundaries automatically — the `>>>` syntax the proposal mentioned is Selenium-
+shaped, not Playwright's. The actual help an agent needs is a bridge from a
+brittle attribute-CSS selector to the semantic role-locator form Playwright
+prefers. So the landed helper: when a step fails with a parseable CSS selector
+AND the session has cached ARIA selector hints from a prior `aria` capture, the
+helper tokenizes the failing selector (stripping vendor prefixes and structural
+noise) and looks for an overlapping hint label. A match surfaces in
+`suggested_next_step` as `role=button[name="Register now"]` style — ready to
+paste into Browser Library's `Click` / `Fill Text` / etc. The reviewer-mandated
+guard fires when the session has observed closed shadow roots: the role-locator
+hint is suppressed (role= can't enter closed roots either) and the closed-shadow
+advisory takes precedence.
 
 The implementation collapsed #1 + #6 into a single coherent wire: the DOM
 probe writes the count to the session record; `_diagnostic_next_step` reads

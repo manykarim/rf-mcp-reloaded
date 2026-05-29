@@ -48,6 +48,12 @@ class LiveSessionRecord:
     # cross-review). The count is the most recent probe's value.
     has_possible_closed_shadow_roots: bool = False
     possible_closed_shadow_root_count: int = 0
+    # ARIA-derived ready-to-paste Playwright role locators from the session's
+    # most recent aria capture (proposal #2). Consumed by _diagnostic_next_step
+    # to bridge a failed flat CSS selector to a matching role-locator when one
+    # exists. Kept on the record (not the summary) so the field doesn't bloat
+    # every get-summary response.
+    latest_aria_selector_hints: list[dict[str, str]] = field(default_factory=list)
     # Runtime-only handle to the live RF execution engine (never serialized).
     engine: Any = field(default=None, repr=False, compare=False)
 
@@ -241,6 +247,26 @@ class LiveSessionStore:
                 return None
             setattr(record, field_name, list(tags))
             record.bump_version()
+            return record.to_summary()
+
+    def record_aria_selector_hints(
+        self, session_id: str, hints: list[dict[str, str]]
+    ) -> SessionSummary | None:
+        """Persist the most recent ARIA-derived role locators on the session.
+
+        Consumed by ``_diagnostic_next_step`` to suggest a role-locator
+        alternative when a flat CSS selector fails. Does not bump version —
+        these hints are agent-helper state, not observable session content
+        (and bumping for every ARIA capture would defeat ``since_version``
+        polling). Soft no-op when ``hints`` is empty so a probe that produced
+        zero hints doesn't clobber a useful prior list.
+        """
+        with self._lock:
+            record = self._sessions.get(session_id)
+            if record is None:
+                return None
+            if hints:
+                record.latest_aria_selector_hints = list(hints)
             return record.to_summary()
 
     def record_shadow_signal(

@@ -687,6 +687,12 @@ def capture_inspection_snapshot(
             # Append the closed-shadow advisory to the ARIA summary when the
             # session has observed inaccessible shadow content.
             _annotate_aria_for_closed_shadow(summary, record)
+            # Promote the role-locator hints into session state so the
+            # diagnostic helper can suggest them when a flat selector fails
+            # (cross-review proposal #2, gated by proposal #6's signal).
+            hints = summary.get("selector_hints") or []
+            if hints:
+                store.record_aria_selector_hints(session_id, hints)
             source = f"keyword:{keyword}"
         elif kind == SnapshotKind.SCREENSHOT:
             path, byte_count, sha, summary, payload, keyword = _capture_screenshot(engine, session_id, kind)
