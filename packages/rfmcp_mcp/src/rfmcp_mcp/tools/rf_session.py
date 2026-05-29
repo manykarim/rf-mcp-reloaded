@@ -98,6 +98,17 @@ def build_session_tool(store: LiveSessionStore):
                 description="Attach-bridge target port. action='open' with attach_requested=True only.",
             ),
         ] = None,
+        since_version: Annotated[
+            int | None,
+            Field(
+                default=None,
+                description=(
+                    "action='get' only. Pass the last seen session.version to short-circuit when "
+                    "nothing changed: response becomes "
+                    "{ok: true, unchanged: true, session: {session_id, version, status}}."
+                ),
+            ),
+        ] = None,
     ) -> dict:
         """Manage the lifecycle of a bounded live Robot Framework session.
 
@@ -105,7 +116,8 @@ def build_session_tool(store: LiveSessionStore):
 
         - ``open``: create a new live session. Returns ``{ok, session}`` whose ``session.session_id`` is used
           by every other tool in this surface. Transport / attach parameters apply here only.
-        - ``get``: read the current summary for an existing session. Requires ``session_id``.
+        - ``get``: read the current summary for an existing session. Requires ``session_id``. Pass
+          ``since_version`` to skip the full payload when the session hasn't changed.
         - ``close``: terminate an existing session and release its execution context. Requires ``session_id``.
         """
 
@@ -170,6 +182,17 @@ def build_session_tool(store: LiveSessionStore):
             summary = store.get_summary(session_id)
             if summary is None:
                 return _session_not_found(session_id, action)
+            if since_version is not None and summary.version == since_version:
+                # Cheap "nothing changed" reply for tight polling loops.
+                return {
+                    "ok": True,
+                    "unchanged": True,
+                    "session": {
+                        "session_id": summary.session_id,
+                        "version": summary.version,
+                        "status": summary.status.value,
+                    },
+                }
             return {"ok": True, "session": summary.model_dump(mode="json")}
 
         # action == SessionAction.CLOSE

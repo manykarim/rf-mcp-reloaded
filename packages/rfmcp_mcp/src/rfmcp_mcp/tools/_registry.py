@@ -7,10 +7,11 @@ from rfmcp_core.runtime.session import LiveSessionStore
 from rfmcp_mcp.tools.app_inspect_state import build_app_inspect_state_tool
 from rfmcp_mcp.tools.rf_context import build_context_tool
 from rfmcp_mcp.tools.rf_execute_step import build_execute_step_tool
+from rfmcp_mcp.tools.rf_export_suite import build_export_suite_tool
 from rfmcp_mcp.tools.rf_manage_session import build_manage_session_tool
 from rfmcp_mcp.tools.rf_session import build_session_tool
 
-MAX_USER_FACING_TOOLS = 5
+MAX_USER_FACING_TOOLS = 6
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,19 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
             "to the active session, which CLI workflows cannot persist across steps."
         ),
         factory=build_manage_session_tool,
+    ),
+    ToolDefinition(
+        name="rf_export_suite",
+        description=(
+            "Render the session's recorded steps + declarative manifest into a canonical RF7 "
+            ".robot suite. File-first by default (manifest with path/bytes/sha256); pass "
+            "return_inline=True for an inline preview."
+        ),
+        live_state_justification=(
+            "Reads the per-session manifest (steps + declared variables/setups/teardowns/tags) "
+            "that only exists inside the active live session."
+        ),
+        factory=build_export_suite_tool,
     ),
     ToolDefinition(
         name="app_inspect_state",

@@ -82,6 +82,17 @@ def build_app_inspect_state_tool(store: LiveSessionStore):
                 ),
             ),
         ] = False,
+        include_shadow_dom: Annotated[
+            bool,
+            Field(
+                default=False,
+                description=(
+                    "snapshot_kind='dom' only. When True, walk open shadow roots via Evaluate "
+                    "JavaScript and emit declarative shadow DOM (<template shadowrootmode='open'>). "
+                    "Browser Library required. ARIA already traverses Shadow DOM + iframes natively."
+                ),
+            ),
+        ] = False,
     ) -> dict:
         """Capture an approved inspection snapshot, persist it to disk, return a manifest.
 
@@ -104,6 +115,7 @@ def build_app_inspect_state_tool(store: LiveSessionStore):
                 return_inline=return_inline,
                 inline_max_bytes=inline_max_bytes,
                 summary_only=summary_only,
+                include_shadow_dom=include_shadow_dom,
             )
             if isinstance(result, ErrorEnvelope):
                 return {"ok": False, "error": result.model_dump(mode="json")}

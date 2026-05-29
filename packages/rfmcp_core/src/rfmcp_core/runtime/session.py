@@ -19,6 +19,8 @@ class LiveSessionRecord:
     http_host: str | None = None
     status: SessionStatus = SessionStatus.OPEN
     step_count: int = 0
+    # Monotonic version of observable state. Bumped by every store mutation.
+    version: int = 0
     last_error: ErrorEnvelope | None = None
     steps: list[str] = field(default_factory=list)
     rf_context: dict[str, Any] = field(default_factory=lambda: {"${CURRENT_TEST}": "Repair Session"})
@@ -50,6 +52,7 @@ class LiveSessionRecord:
             transport=self.transport,
             created_at=self.created_at,
             step_count=self.step_count,
+            version=self.version,
             attach_requested=self.attach_requested,
             http_host=self.http_host,
             attach_host=self.attach_host,
@@ -57,6 +60,10 @@ class LiveSessionRecord:
             attach_token=self.attach_token,
             last_error=self.last_error,
         )
+
+    def bump_version(self) -> int:
+        self.version += 1
+        return self.version
 
 
 class LiveSessionStore:
@@ -132,6 +139,7 @@ class LiveSessionStore:
             if record is None:
                 return None
             record.status = SessionStatus.CLOSED
+            record.bump_version()
             engine = record.engine
             record.engine = None
             summary = record.to_summary()
@@ -149,6 +157,7 @@ class LiveSessionStore:
                 return None
             record.step_count += 1
             record.steps.append(instruction)
+            record.bump_version()
             return record.to_summary()
 
     def record_error(
@@ -165,6 +174,7 @@ class LiveSessionStore:
             record.last_error = error
             if status is not None:
                 record.status = status
+            record.bump_version()
             return record.to_summary()
 
     def set_context_value(self, session_id: str, key: str, value: Any) -> SessionSummary | None:
@@ -173,6 +183,7 @@ class LiveSessionStore:
             if record is None:
                 return None
             record.rf_context[key] = value
+            record.bump_version()
             return record.to_summary()
 
     def record_declared_variable(
@@ -184,6 +195,7 @@ class LiveSessionStore:
             if record is None:
                 return None
             record.declared_variables[key] = value
+            record.bump_version()
             return record.to_summary()
 
     def set_session_setting(
@@ -205,6 +217,7 @@ class LiveSessionStore:
             if record is None:
                 return None
             setattr(record, field_name, value)
+            record.bump_version()
             return record.to_summary()
 
     def set_session_tags(
@@ -219,6 +232,7 @@ class LiveSessionStore:
             if record is None:
                 return None
             setattr(record, field_name, list(tags))
+            record.bump_version()
             return record.to_summary()
 
     def configure_capabilities(
@@ -232,8 +246,13 @@ class LiveSessionStore:
             record = self._sessions.get(session_id)
             if record is None:
                 return None
+            mutated = False
             if allow_context_write is not None:
                 record.allow_context_write = allow_context_write
+                mutated = True
             if allowed_snapshot_kinds is not None:
                 record.allowed_snapshot_kinds = allowed_snapshot_kinds
+                mutated = True
+            if mutated:
+                record.bump_version()
             return record.to_summary()

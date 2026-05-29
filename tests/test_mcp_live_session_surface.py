@@ -100,6 +100,7 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
                 "rf_execute_step",
                 "rf_context",
                 "rf_manage_session",
+                "rf_export_suite",
                 "app_inspect_state",
             ),
         )

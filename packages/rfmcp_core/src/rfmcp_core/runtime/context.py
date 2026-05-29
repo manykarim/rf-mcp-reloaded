@@ -157,4 +157,6 @@ def set_runtime_context(
             suggested_next_step="Verify the live session (or attach bridge) is reachable, then retry the context mutation.",
             details={"session_id": session_id, "key": key},
         )
-    return result.model_copy(update={"session": record.to_summary()})
+    # Mirror the write into the store so the version bumps and delta-get sees the change.
+    updated_summary = store.set_context_value(session_id, key, value) or record.to_summary()
+    return result.model_copy(update={"session": updated_summary})

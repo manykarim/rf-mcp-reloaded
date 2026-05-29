@@ -465,6 +465,10 @@ class SessionSummary(BaseModel):
     transport: Literal["stdio", "http"]
     created_at: datetime
     step_count: int = Field(ge=0)
+    # Monotonic version bumped on every observable mutation (status / steps / declarations /
+    # tags / setups). Pass back to ``rf_session(action='get', since_version=...)`` to skip
+    # the full summary when nothing changed.
+    version: int = Field(default=0, ge=0)
     attach_requested: bool = False
     http_host: str | None = None
     # Loopback attach bridge target + the per-session ephemeral token the operator

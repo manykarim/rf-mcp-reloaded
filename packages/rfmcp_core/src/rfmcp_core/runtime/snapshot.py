@@ -232,7 +232,56 @@ def _dom_summary(html: str) -> dict[str, Any]:
     }
 
 
-def _capture_dom(engine: Any, session_id: str, kind: SnapshotKind) -> tuple[Path, int, str, dict[str, Any], str, str]:
+# Single-line walker using single-quoted JS strings throughout (no `\"` escapes
+# that the RF runner can mangle) and no `${...}` template literals (RF would
+# treat them as Robot variable references). Returns the page's HTML with open
+# shadow roots inlined as declarative `<template shadowrootmode="open">`.
+_SHADOW_DOM_WALKER_JS = (
+    "(function(){"
+    "function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}"
+    "function ea(s){return String(s).replace(/\"/g,'&quot;');}"
+    "function serialize(root){"
+    "var out='';var nodes=root.childNodes;"
+    "for(var i=0;i<nodes.length;i++){"
+    "var node=nodes[i];"
+    "if(node.nodeType===Node.TEXT_NODE){out+=esc(node.nodeValue||'');continue;}"
+    "if(node.nodeType===Node.COMMENT_NODE){out+='<!--'+(node.nodeValue||'')+'-->';continue;}"
+    "if(node.nodeType!==Node.ELEMENT_NODE){continue;}"
+    "var tag=node.localName;var attrs='';var al=node.attributes||[];"
+    "for(var j=0;j<al.length;j++){var a=al[j];attrs+=' '+a.name+'=\"'+ea(a.value||'')+'\"';}"
+    "out+='<'+tag+attrs+'>';"
+    "if(node.shadowRoot){out+='<template shadowrootmode=\"open\">';out+=serialize(node.shadowRoot);out+='</template>';}"
+    "out+=serialize(node);out+='</'+tag+'>';"
+    "}return out;}"
+    "var dt=document.doctype?('<!DOCTYPE '+document.doctype.name+'>'):'';"
+    "return dt+serialize(document.documentElement.parentNode);"
+    "})()"
+)
+
+
+def _capture_dom(
+    engine: Any,
+    session_id: str,
+    kind: SnapshotKind,
+    *,
+    include_shadow_dom: bool = False,
+) -> tuple[Path, int, str, dict[str, Any], str, str]:
+    if include_shadow_dom:
+        # Walk shadow roots via Evaluate JavaScript (Browser Library).
+        # First arg is the selector; empty means "evaluate against the page".
+        try:
+            value = engine.query("Evaluate JavaScript", ["", _SHADOW_DOM_WALKER_JS])
+        except Exception as exc:
+            raise _SnapshotCaptureError(
+                attempted=["Evaluate JavaScript"], detail=str(exc) or exc.__class__.__name__
+            )
+        html = str(value if value is not None else "")
+        path = _snapshot_path(session_id, kind)
+        byte_count, sha = _persist_text(path, html)
+        summary = _dom_summary(html)
+        summary["shadow_dom_walked"] = True
+        return path, byte_count, sha, summary, html, "Evaluate JavaScript (shadow walker)"
+
     candidates = ("Get Page Source", "Get Source")
     last_error: str | None = None
     for keyword in candidates:
@@ -423,6 +472,7 @@ def capture_inspection_snapshot(
     return_inline: bool = False,
     inline_max_bytes: int | None = None,
     summary_only: bool = False,
+    include_shadow_dom: bool = False,
 ) -> InspectionSnapshotResult | ErrorEnvelope:
     try:
         kind = SnapshotKind(snapshot_kind)
@@ -501,7 +551,9 @@ def capture_inspection_snapshot(
             path, byte_count, sha, summary, payload = _capture_app_context(engine, session_id, kind)
             source = "live-session"
         elif kind == SnapshotKind.DOM:
-            path, byte_count, sha, summary, payload, keyword = _capture_dom(engine, session_id, kind)
+            path, byte_count, sha, summary, payload, keyword = _capture_dom(
+                engine, session_id, kind, include_shadow_dom=include_shadow_dom
+            )
             source = f"keyword:{keyword}"
         elif kind == SnapshotKind.DOM_SELECTOR:
             path, byte_count, sha, summary, payload, keyword = _capture_dom_selector(
