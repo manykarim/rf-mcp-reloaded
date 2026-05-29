@@ -53,6 +53,7 @@ from rfmcp_core.contracts.runtime import (
     RobotContextMutationResult,
     RobotContextView,
     SnapshotKind,
+    SnapshotManifest,
 )
 
 __all__ = [
@@ -99,6 +100,7 @@ __all__ = [
     "Severity",
     "SessionStatus",
     "SnapshotKind",
+    "SnapshotManifest",
     "SkillManifest",
     "TagScope",
     "TransportKind",

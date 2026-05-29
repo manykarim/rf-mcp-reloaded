@@ -280,20 +280,80 @@
     },
     "SnapshotKind": {
       "enum": [
+        "app_context",
         "dom",
-        "accessibility",
+        "dom_selector",
+        "aria",
         "screenshot",
-        "last_api_response",
-        "app_context"
+        "console_log",
+        "network_log"
       ],
       "title": "SnapshotKind",
       "type": "string"
+    },
+    "SnapshotManifest": {
+      "additionalProperties": false,
+      "description": "Pointer to the on-disk snapshot artifact plus a small, kind-specific summary.\n\nThe manifest is always returned. ``content`` on the parent result is only populated\nwhen the caller asks for it explicitly (``return_inline=True``).",
+      "properties": {
+        "bytes": {
+          "description": "Size of the persisted artifact in bytes.",
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "format": {
+          "description": "Artifact format: html | html_fragment | yaml | png | json | jsonl | txt.",
+          "minLength": 1,
+          "title": "Format",
+          "type": "string"
+        },
+        "path": {
+          "description": "Repo-relative path to the persisted snapshot artifact (e.g. .rfmcp/snapshots/<sid>/0007_dom.html).",
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "description": "SHA-256 hex digest of the persisted artifact.",
+          "maxLength": 64,
+          "minLength": 64,
+          "title": "Sha256",
+          "type": "string"
+        },
+        "summary": {
+          "additionalProperties": true,
+          "description": "Kind-specific stats (e.g. title, element_count, role_histogram, status_histogram).",
+          "title": "Summary",
+          "type": "object"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256",
+        "format"
+      ],
+      "title": "SnapshotManifest",
+      "type": "object"
     }
   },
   "additionalProperties": false,
+  "description": "Result of an ``app_inspect_state`` capture.\n\n``manifest`` always points at the file on disk. ``content`` is the inline payload\nwhen the caller passed ``return_inline=True``; it is ``None`` otherwise to keep the\nresponse token-cheap. ``truncated`` is ``True`` when ``content`` was capped by the\nper-kind or caller-supplied inline limit.",
   "properties": {
-    "payload": {
-      "title": "Payload"
+    "content": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Content"
+    },
+    "manifest": {
+      "$ref": "#/$defs/SnapshotManifest"
     },
     "provenance": {
       "$ref": "#/$defs/ProvenanceRecord"
@@ -303,13 +363,18 @@
     },
     "snapshot_kind": {
       "$ref": "#/$defs/SnapshotKind"
+    },
+    "truncated": {
+      "default": false,
+      "title": "Truncated",
+      "type": "boolean"
     }
   },
   "required": [
     "session",
     "snapshot_kind",
     "provenance",
-    "payload"
+    "manifest"
   ],
   "title": "InspectionSnapshotResult",
   "type": "object"

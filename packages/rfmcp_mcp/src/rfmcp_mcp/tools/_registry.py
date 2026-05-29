@@ -71,8 +71,10 @@ TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
     ToolDefinition(
         name="app_inspect_state",
         description=(
-            "Capture an approved inspection snapshot (DOM, accessibility, screenshot, last API response, "
-            "app context) from the loaded libraries of the active live session."
+            "Capture an approved inspection snapshot (snapshot_kind=app_context|dom|dom_selector|aria|"
+            "screenshot|console_log|network_log) from the loaded libraries of the active live session. "
+            "Snapshots are persisted to disk; the response carries a small manifest (path/bytes/sha256/"
+            "format/summary). Pass return_inline=True to include the payload in-band (capped per kind)."
         ),
         live_state_justification=(
             "Reads approved live application state from the loaded libraries of the current session."

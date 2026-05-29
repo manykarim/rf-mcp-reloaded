@@ -169,8 +169,9 @@ def run_scenario(name: str, steps: list[tuple[str, str]], tools: dict) -> dict:
         if not ok:
             failed_tool_calls += 1
             error = result.get("error", {})
-            dom = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.DOM)  # live snapshot to diagnose
+            dom = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.DOM)  # file-first manifest
             tool_calls += 1
+            manifest = (dom.get("snapshot") or {}).get("manifest", {})
             issues.append(
                 {
                     "scenario": name,
@@ -180,6 +181,8 @@ def run_scenario(name: str, steps: list[tuple[str, str]], tools: dict) -> dict:
                     "error_code": error.get("code"),
                     "error_message": error.get("message", "")[:300],
                     "dom_available": bool(dom.get("ok")),
+                    "dom_manifest_path": manifest.get("path"),
+                    "dom_summary": manifest.get("summary"),
                 }
             )
             print(f"        -> {error.get('code')}: {error.get('message', '')[:120]}")

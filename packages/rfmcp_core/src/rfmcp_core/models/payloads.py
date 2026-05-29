@@ -487,11 +487,13 @@ class StepResult(BaseModel):
 
 
 class SnapshotKind(str, Enum):
-    DOM = "dom"
-    ACCESSIBILITY = "accessibility"
-    SCREENSHOT = "screenshot"
-    LAST_API_RESPONSE = "last_api_response"
     APP_CONTEXT = "app_context"
+    DOM = "dom"
+    DOM_SELECTOR = "dom_selector"
+    ARIA = "aria"
+    SCREENSHOT = "screenshot"
+    CONSOLE_LOG = "console_log"
+    NETWORK_LOG = "network_log"
 
 
 class RobotContextView(BaseModel):
@@ -510,10 +512,45 @@ class RobotContextMutationResult(BaseModel):
     value: Any
 
 
+class SnapshotManifest(BaseModel):
+    """Pointer to the on-disk snapshot artifact plus a small, kind-specific summary.
+
+    The manifest is always returned. ``content`` on the parent result is only populated
+    when the caller asks for it explicitly (``return_inline=True``).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    path: str = Field(
+        min_length=1,
+        description="Repo-relative path to the persisted snapshot artifact (e.g. .rfmcp/snapshots/<sid>/0007_dom.html).",
+    )
+    bytes: int = Field(ge=0, description="Size of the persisted artifact in bytes.")
+    sha256: str = Field(min_length=64, max_length=64, description="SHA-256 hex digest of the persisted artifact.")
+    format: str = Field(
+        min_length=1,
+        description="Artifact format: html | html_fragment | yaml | png | json | jsonl | txt.",
+    )
+    summary: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Kind-specific stats (e.g. title, element_count, role_histogram, status_histogram).",
+    )
+
+
 class InspectionSnapshotResult(BaseModel):
+    """Result of an ``app_inspect_state`` capture.
+
+    ``manifest`` always points at the file on disk. ``content`` is the inline payload
+    when the caller passed ``return_inline=True``; it is ``None`` otherwise to keep the
+    response token-cheap. ``truncated`` is ``True`` when ``content`` was capped by the
+    per-kind or caller-supplied inline limit.
+    """
+
     model_config = ConfigDict(extra="forbid")
 
     session: SessionSummary
     snapshot_kind: SnapshotKind
     provenance: ProvenanceRecord
-    payload: Any
+    manifest: SnapshotManifest
+    content: str | None = None
+    truncated: bool = False

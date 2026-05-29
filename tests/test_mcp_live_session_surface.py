@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import io
+import os
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -76,6 +78,19 @@ def _ctx_set(context_tool, session_id: str, key: str, value):
 
 
 class McpLiveSessionSurfaceTests(unittest.TestCase):
+    def setUp(self) -> None:
+        # Snapshot capture writes to disk; route it to a fresh tempdir per test.
+        self._snapshots_tmp = tempfile.TemporaryDirectory()
+        self._prev_snapshots_dir = os.environ.get("RFMCP_SNAPSHOTS_DIR")
+        os.environ["RFMCP_SNAPSHOTS_DIR"] = self._snapshots_tmp.name
+
+    def tearDown(self) -> None:
+        if self._prev_snapshots_dir is None:
+            os.environ.pop("RFMCP_SNAPSHOTS_DIR", None)
+        else:
+            os.environ["RFMCP_SNAPSHOTS_DIR"] = self._prev_snapshots_dir
+        self._snapshots_tmp.cleanup()
+
     def test_allowlisted_surface_stays_small_and_session_only(self) -> None:
         self.assertLessEqual(len(ALLOWLISTED_TOOL_NAMES), MAX_USER_FACING_TOOLS)
         self.assertEqual(
@@ -328,7 +343,9 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
 
         snapshot = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.APP_CONTEXT)
         self.assertTrue(snapshot["ok"])
-        self.assertIn("BuiltIn", snapshot["snapshot"]["payload"]["loaded_libraries"])
+        # app_context is always inlined (compact JSON); summary carries library/variable counts.
+        self.assertIn("BuiltIn", snapshot["snapshot"]["content"])
+        self.assertGreater(snapshot["snapshot"]["manifest"]["summary"]["library_count"], 0)
 
     def test_context_write_policy_and_session_denials_are_structured(self) -> None:
         store = LiveSessionStore()
@@ -363,23 +380,41 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
         # app_context is real, always-available live session state (no external app needed).
         app_ctx = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.APP_CONTEXT)
         self.assertTrue(app_ctx["ok"])
-        self.assertEqual(app_ctx["snapshot"]["snapshot_kind"], "app_context")
-        self.assertEqual(app_ctx["snapshot"]["provenance"]["kind"], "observed")
-        self.assertEqual(app_ctx["snapshot"]["provenance"]["source"], "live-session")
-        self.assertIn("BuiltIn", app_ctx["snapshot"]["payload"]["loaded_libraries"])
+        snap = app_ctx["snapshot"]
+        self.assertEqual(snap["snapshot_kind"], "app_context")
+        self.assertEqual(snap["provenance"]["kind"], "observed")
+        self.assertEqual(snap["provenance"]["source"], "live-session")
+        # Manifest carries the on-disk path + a kind-specific summary.
+        self.assertTrue(snap["manifest"]["path"].endswith(".json"))
+        self.assertEqual(snap["manifest"]["format"], "json")
+        self.assertGreater(snap["manifest"]["summary"]["library_count"], 0)
+        # app_context is small enough to always inline; the file should exist on disk too.
+        self.assertIn("BuiltIn", snap["content"])
+        self.assertTrue(Path(snap["manifest"]["path"]).exists())
 
-        # A default session loads no browser/HTTP library, so these kinds have no live
+        # A default session loads no browser/HTTP library, so DOM-family kinds have no live
         # source and must report a structured snapshot-unavailable error (not a fixture).
         for snapshot_kind in (
             SnapshotKind.DOM,
             SnapshotKind.SCREENSHOT,
-            SnapshotKind.ACCESSIBILITY,
-            SnapshotKind.LAST_API_RESPONSE,
+            SnapshotKind.ARIA,
+            SnapshotKind.CONSOLE_LOG,
         ):
             response = inspect_state(session_id=session_id, snapshot_kind=snapshot_kind)
             self.assertFalse(response["ok"], snapshot_kind.value)
             self.assertEqual(response["error"]["code"], "snapshot-unavailable", snapshot_kind.value)
             self.assertEqual(response["error"]["provenance"]["kind"], "observed", snapshot_kind.value)
+
+        # dom_selector requires a selector — missing-selector is its own structured error.
+        missing_selector = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.DOM_SELECTOR)
+        self.assertFalse(missing_selector["ok"])
+        self.assertEqual(missing_selector["error"]["code"], "missing-selector")
+
+        # network_log is intentionally unavailable in v1 with HAR-recording guidance.
+        net = inspect_state(session_id=session_id, snapshot_kind=SnapshotKind.NETWORK_LOG)
+        self.assertFalse(net["ok"])
+        self.assertEqual(net["error"]["code"], "snapshot-unavailable")
+        self.assertIn("recordHar", net["error"]["suggested_next_step"])
 
         missing = inspect_state(session_id="missing-session", snapshot_kind=SnapshotKind.DOM)
         self.assertFalse(missing["ok"])
@@ -515,7 +550,8 @@ class McpLiveSessionSurfaceTests(unittest.TestCase):
         self.assertEqual(context["context"]["variables"], {"${FROM_BRIDGE}": 1})
         self.assertTrue(written["ok"])
         self.assertTrue(snapshot["ok"])
-        self.assertIn("Browser", snapshot["snapshot"]["payload"]["loaded_libraries"])
+        # app_context content is the persisted JSON; Browser must appear among loaded libs.
+        self.assertIn("Browser", snapshot["snapshot"]["content"])
 
     def test_attach_unreachable_bridge_returns_structured_failure(self) -> None:
         store = LiveSessionStore()

@@ -5,6 +5,7 @@ from rfmcp_core.models.payloads import (
     RobotContextMutationResult,
     RobotContextView,
     SnapshotKind,
+    SnapshotManifest,
 )
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "RobotContextMutationResult",
     "RobotContextView",
     "SnapshotKind",
+    "SnapshotManifest",
 ]
