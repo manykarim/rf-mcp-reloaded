@@ -10,7 +10,9 @@ from rfmcp_cli.commands.repair_diagnostics import repair_diagnostics_command
 from rfmcp_cli.commands.repair_hints import repair_hints_command
 from rfmcp_cli.commands.scaffold_resource import scaffold_resource_command
 from rfmcp_cli.commands.scaffold_suite import scaffold_suite_command
+from rfmcp_cli.commands.serve import serve_command
 from rfmcp_cli.commands.validate import validate_command
+from rfmcp_cli.install import doctor_command, init_command, skills_app
 
 
 app = typer.Typer(help="Robot Framework MCP and workflow CLI.", no_args_is_help=True)
@@ -21,6 +23,10 @@ def main_callback() -> None:
     """Root CLI callback to preserve subcommand mode."""
 
 
+app.command("serve")(serve_command)
+app.command("init")(init_command)
+app.command("doctor")(doctor_command)
+app.add_typer(skills_app, name="skills", help="Manage the bundled agent skills.")
 app.command("validate")(validate_command)
 app.command("generate")(generate_command)
 app.command("ground")(ground_command)
